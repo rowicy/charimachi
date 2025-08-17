@@ -1,8 +1,96 @@
-# template-mobile-app
+# ChariMachi
+
+<img src="./img/icon.png" alt="icon" width="200" />
+
+## 概要
+
+自転車の車道通行を目的とした適切なルート提案アプリ
+
+## 機能
+
+- マップ表示
+- 現在地表示
+- 出発地・到着地の候補検索
+- ルート描画
+  - 自転車専用帯優先
+  - 取締強化交差点注意(オープンデータ)
+  - 信号まち回避
+  - 混雑車道回避
+- 経由地点表示
+- 動時間表示
+- about画面・制作元・出典
+- (駐輪所経由モード)
+- (バス停回避モード)
+
+## 使うデータ
+
+### 自転車専用帯優先
+
+- [OpenStreetMap](https://www.openstreetmap.org/)
+
+### 取締強化交差点注意（オープンデータ）
+
+- [東京都オープンデータカタログ - 交通規制情報](https://catalog.data.metro.tokyo.lg.jp/dataset/t000022d1700000024/resource/fb207998-df4c-434c-9280-1d7c2fbfdf1d)
+
+### 信号まち回避
+
+- [OpenStreetMap](https://www.openstreetmap.org/)
+
+### 混雑車道回避
+
+- [警視庁 - 交差点区部統計データ](https://www.keishicho.metro.tokyo.lg.jp/about_mpd/jokyo_tokei/tokei_jokyo/ryo.files/02_kousatenkubu_csv.zip)
+- [国土交通省 - 道路統計データ](https://www.mlit.go.jp/road/ir/ir-data/ir-data.html)
+
+### （駐輪所経由モード）
+
+- [東京都オープンデータカタログ - 駐輪場情報](https://catalog.data.metro.tokyo.lg.jp/dataset?q=title%3A+%E9%A7%90%E8%BC%AA%E5%A0%B4&sort=score+desc%2C+metadata_modified+desc)
+
+### （バス停回避モード）
+
+- [公共交通オープンデータ - 都営バス停留所データ](https://ckan.odpt.org/dataset/b_busstop-toei/resource/f340278d-aefe-47ea-bc8f-15ebe48c286d)
+
+## 構成図
+
+### アーキテクチャ
+
+```mermaid
+flowchart LR
+    ClientApp[クライアントアプリ（Expo）]　--ルート検索--> GoServer
+
+
+    GoServer <--元ルートデータ--> OpenRouteService
+    
+
+    ClientApp[クライアントアプリ（Expo）]　--描画--> OSM[OpenStreetMap]
+    
+```
+
+### 処理の流れ
+
+```mermaid
+sequenceDiagram
+participant OSM as OpenStreetMap
+    participant Client as クライアントアプリ (Expo)
+    participant Go as Goサーバー
+    participant ORS as OpenRouteService
+    
+
+    Client->>Go: 経路リクエスト
+    Go->>ORS: 経路探索リクエスト
+    Client->>OSM: 地図データ参照
+    OSM-->>Client: 地図データ返却
+    ORS-->>Go: 経路データ返却
+    Go-->>Client: 整形済みデータ返却
+    Client->>Client: 経路描画
+```
+
+---
+
+## template-mobile-app
 
 Templates for mobile app development.
 
-## [mobile-app](./mobile-app)
+### [mobile-app](./mobile-app)
 
 This is a template for mobile app development using:
 
@@ -10,14 +98,14 @@ This is a template for mobile app development using:
 - [React Native](https://reactnative.dev/)
 - [Node.js](https://nodejs.org/) v22.14.0
 
-## [api](./api)
+### [api](./api)
 
 This is a template for building APIs using:
 
 - [Go](https://go.dev/) with [Gin](https://gin-gonic.com/) framework
 - [gin-swagger](https://github.com/swaggo/gin-swagger) for OpenAPI/Swagger generation
 
-## [openapi-specifications](./openapi-specifications)
+### [openapi-specifications](./openapi-specifications)
 
 This directory contains OpenAPI specifications swagger files.
 OpenAPI version 3.0 is used for the specifications, and the files are in JSON format.
@@ -38,7 +126,7 @@ This script will:
 - [OpenAPI](https://www.openapis.org/)
 - [Swagger](https://swagger.io/)
 
-## [ls-lint](./.ls-lint.yml)
+### [ls-lint](./.ls-lint.yml)
 
 This is a configuration file for [ls-lint](https://ls-lint.org/), a linter for directory structures.  
 GitHub Actions are set up to run ls-lint on pull requests to ensure that the directory structure adheres to the defined rules.  
