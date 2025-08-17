@@ -1,5 +1,7 @@
 {
   "recommendations": [
-    "42crunch.vscode-openapi"
+    "42crunch.vscode-openapi",
+    "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+    "bierner.markdown-mermaid"
   ]
 }
