@@ -13,6 +13,93 @@
         }
     ],
     "paths": {
+        "/directions/bicycle": {
+            "post": {
+                "description": "出発地点の座標と目的地の座標をPOSTのbodyで受け取り、OpenRouteServiceのAPIを呼び出してルート情報を取得する",
+                "parameters": [
+                    {
+                        "description": "自転車ルート検索リクエスト",
+                        "in": "body",
+                        "name": "orsDirectionsRequest",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.ORSDirectionsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {},
+                                "schema": {
+                                    "$ref": "#/components/schemas/DirectionsResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ORSErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ORSErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ORSErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "自転車ルート検索",
+                "tags": [
+                    "map"
+                ]
+            }
+        },
         "/health": {
             "get": {
                 "description": "Returns the health status of the API",
@@ -93,7 +180,7 @@
                 },
                 "summary": "Get all posts from JSONPlaceholder",
                 "tags": [
-                    "posts"
+                    "example"
                 ]
             }
         },
@@ -188,13 +275,129 @@
                 },
                 "summary": "Get a post by ID from JSONPlaceholder",
                 "tags": [
-                    "posts"
+                    "example"
+                ]
+            }
+        },
+        "/search": {
+            "get": {
+                "description": "Nominatimのレスポンスを横流し(https://nominatim.openstreetmap.org/search?q={Client input}\u0026format=json\u0026limit=5)",
+                "parameters": [
+                    {
+                        "description": "検索文字列",
+                        "in": "query",
+                        "name": "q",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {},
+                                "schema": {
+                                    "$ref": "#/components/schemas/SearchResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "目的地候補検索",
+                "tags": [
+                    "map"
                 ]
             }
         }
     },
     "components": {
         "schemas": {
+            "DirectionsResponse": {
+                "properties": {
+                    "bbox": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    },
+                    "features": {
+                        "items": {
+                            "$ref": "#/definitions/main.ORSFeature"
+                        },
+                        "type": "array"
+                    },
+                    "metadata": {
+                        "$ref": "#/definitions/main.ORSMetadata"
+                    },
+                    "type": {
+                        "description": "https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/post\nのレスポンスを構造体に",
+                        "type": "string"
+                    },
+                    "warningPoints": {
+                        "description": "XXX 追加項目",
+                        "items": {
+                            "$ref": "#/definitions/main.WarningPoint"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
             "ErrorResponse": {
                 "properties": {
                     "error": {
@@ -204,6 +407,556 @@
                     "message": {
                         "example": "Failed to fetch data",
                         "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSAlternativeRoutes": {
+                "properties": {
+                    "share_factor": {
+                        "type": "number"
+                    },
+                    "target_count": {
+                        "type": "integer"
+                    },
+                    "weight_factor": {
+                        "type": "number"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSCustomModel": {
+                "properties": {
+                    "areas": {
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "distance_influence": {
+                        "type": "number"
+                    },
+                    "priority": {
+                        "items": {
+                            "$ref": "#/definitions/main.ORSCustomRule"
+                        },
+                        "type": "array"
+                    },
+                    "speed": {
+                        "items": {
+                            "$ref": "#/definitions/main.ORSCustomRule"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSCustomRule": {
+                "properties": {
+                    "condition": {
+                        "type": "string"
+                    },
+                    "keyword": {
+                        "type": "string"
+                    },
+                    "operation": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "number"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSDirectionsRequest": {
+                "properties": {
+                    "avoidTrafficLights": {
+                        "type": "boolean"
+                    },
+                    "avoidbBusStops": {
+                        "type": "boolean"
+                    },
+                    "coordinates": {
+                        "description": "Required field - The waypoints to use for the route as an array of longitude/latitude pairs in WGS 84",
+                        "items": {
+                            "items": {
+                                "format": "float64",
+                                "type": "number"
+                            },
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    "viaBikeParking": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "coordinates"
+                ],
+                "type": "object"
+            },
+            "ORSEngine": {
+                "properties": {
+                    "build_date": {
+                        "type": "string"
+                    },
+                    "graph_date": {
+                        "type": "string"
+                    },
+                    "osm_date": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSErrorResponse": {
+                "properties": {
+                    "error": {
+                        "properties": {
+                            "code": {
+                                "type": "integer"
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSFeature": {
+                "properties": {
+                    "bbox": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    },
+                    "geometry": {
+                        "$ref": "#/definitions/main.ORSGeometry"
+                    },
+                    "properties": {
+                        "$ref": "#/definitions/main.ORSFeatureProperties"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSFeatureProperties": {
+                "properties": {
+                    "extras": {
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "segments": {
+                        "items": {
+                            "$ref": "#/definitions/main.ORSSegment"
+                        },
+                        "type": "array"
+                    },
+                    "summary": {
+                        "$ref": "#/definitions/main.ORSSummary"
+                    },
+                    "warnings": {
+                        "items": {
+                            "$ref": "#/definitions/main.ORSWarning"
+                        },
+                        "type": "array"
+                    },
+                    "way_points": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSGeometry": {
+                "properties": {
+                    "coordinates": {
+                        "items": {
+                            "items": {
+                                "format": "float64",
+                                "type": "number"
+                            },
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSManeuver": {
+                "properties": {
+                    "bearing_after": {
+                        "type": "integer"
+                    },
+                    "bearing_before": {
+                        "type": "integer"
+                    },
+                    "location": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSMetadata": {
+                "properties": {
+                    "attribution": {
+                        "type": "string"
+                    },
+                    "engine": {
+                        "$ref": "#/definitions/main.ORSEngine"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "query": {
+                        "$ref": "#/definitions/main.ORSQuery"
+                    },
+                    "service": {
+                        "type": "string"
+                    },
+                    "system_message": {
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSProfileParams": {
+                "properties": {
+                    "allow_unsuitable": {
+                        "type": "boolean"
+                    },
+                    "restrictions": {
+                        "$ref": "#/definitions/main.ORSRestrictions"
+                    },
+                    "surface_quality_known": {
+                        "type": "boolean"
+                    },
+                    "weightings": {
+                        "$ref": "#/definitions/main.ORSWeightings"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSQuery": {
+                "properties": {
+                    "alternative_routes": {
+                        "$ref": "#/definitions/main.ORSAlternativeRoutes"
+                    },
+                    "attributes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "bearings": {
+                        "items": {
+                            "items": {
+                                "format": "float64",
+                                "type": "number"
+                            },
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    "continue_straight": {
+                        "type": "boolean"
+                    },
+                    "coordinates": {
+                        "items": {
+                            "items": {
+                                "format": "float64",
+                                "type": "number"
+                            },
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    "custom_model": {
+                        "$ref": "#/definitions/main.ORSCustomModel"
+                    },
+                    "elevation": {
+                        "type": "boolean"
+                    },
+                    "extra_info": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "geometry": {
+                        "type": "boolean"
+                    },
+                    "geometry_simplify": {
+                        "type": "boolean"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "ignore_transfers": {
+                        "type": "boolean"
+                    },
+                    "instructions": {
+                        "type": "boolean"
+                    },
+                    "instructions_format": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "maneuvers": {
+                        "type": "boolean"
+                    },
+                    "maximum_speed": {
+                        "type": "number"
+                    },
+                    "options": {
+                        "$ref": "#/definitions/main.ORSRouteOptions"
+                    },
+                    "preference": {
+                        "type": "string"
+                    },
+                    "radiuses": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    },
+                    "roundabout_exits": {
+                        "type": "boolean"
+                    },
+                    "schedule": {
+                        "type": "boolean"
+                    },
+                    "schedule_duration": {
+                        "type": "string"
+                    },
+                    "schedule_rows": {
+                        "type": "integer"
+                    },
+                    "skip_segments": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "suppress_warnings": {
+                        "type": "boolean"
+                    },
+                    "units": {
+                        "type": "string"
+                    },
+                    "walking_time": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSRestrictions": {
+                "properties": {
+                    "axleload": {
+                        "type": "number"
+                    },
+                    "hazmat": {
+                        "type": "boolean"
+                    },
+                    "height": {
+                        "type": "number"
+                    },
+                    "length": {
+                        "type": "number"
+                    },
+                    "maximum_incline": {
+                        "type": "integer"
+                    },
+                    "maximum_sloped_kerb": {
+                        "type": "number"
+                    },
+                    "minimum_width": {
+                        "type": "number"
+                    },
+                    "smoothness_type": {
+                        "type": "string"
+                    },
+                    "surface_type": {
+                        "type": "string"
+                    },
+                    "track_type": {
+                        "type": "string"
+                    },
+                    "weight": {
+                        "type": "number"
+                    },
+                    "width": {
+                        "type": "number"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSRoundTripOptions": {
+                "properties": {
+                    "length": {
+                        "type": "number"
+                    },
+                    "points": {
+                        "type": "integer"
+                    },
+                    "seed": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSRouteOptions": {
+                "properties": {
+                    "avoid_borders": {
+                        "type": "string"
+                    },
+                    "avoid_countries": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "avoid_features": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "avoid_polygons": {
+                        "additionalProperties": true,
+                        "type": "object"
+                    },
+                    "profile_params": {
+                        "$ref": "#/definitions/main.ORSProfileParams"
+                    },
+                    "round_trip": {
+                        "$ref": "#/definitions/main.ORSRoundTripOptions"
+                    },
+                    "vehicle_type": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSSegment": {
+                "properties": {
+                    "avgspeed": {
+                        "type": "number"
+                    },
+                    "detourfactor": {
+                        "type": "number"
+                    },
+                    "distance": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    },
+                    "percentage": {
+                        "type": "number"
+                    },
+                    "steps": {
+                        "items": {
+                            "$ref": "#/definitions/main.ORSStep"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSStep": {
+                "properties": {
+                    "distance": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    },
+                    "exit_bearings": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    },
+                    "instruction": {
+                        "type": "string"
+                    },
+                    "maneuver": {
+                        "$ref": "#/definitions/main.ORSManeuver"
+                    },
+                    "mode": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "integer"
+                    },
+                    "way_points": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSSummary": {
+                "properties": {
+                    "distance": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSWarning": {
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ORSWeightings": {
+                "properties": {
+                    "green": {
+                        "type": "number"
+                    },
+                    "quiet": {
+                        "type": "number"
+                    },
+                    "shadow": {
+                        "type": "number"
+                    },
+                    "steepness_difficulty": {
+                        "type": "integer"
                     }
                 },
                 "type": "object"
@@ -229,6 +982,33 @@
                     "userId": {
                         "example": 1,
                         "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "SearchResponse": {
+                "type": "object"
+            },
+            "WarningPoint": {
+                "properties": {
+                    "coordinate": {
+                        "description": "座標",
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    },
+                    "message": {
+                        "description": "警告のメッセージ(どんな事故が多かったか)",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "名称, 地元での言われ名など(地獄谷etc)",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "交差点なのか直線道路なのか(このフィールドいらない)",
+                        "type": "string"
                     }
                 },
                 "type": "object"
