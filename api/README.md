@@ -1,5 +1,7 @@
 # API
 
+https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/post
+
 This is a template API implementation using Go and the Gin framework, with automatic Swagger documentation generation.
 
 ## Technology Stack
@@ -65,9 +67,14 @@ The API will be available at `http://localhost:8080`
 ### API Endpoints
 
 - `GET /api/v1/health` - Health check
-- `GET /api/v1/posts` - Get all posts from JSONPlaceholder
-- `GET /api/v1/posts/{id}` - Get a specific post by ID
+- `GET /api/v1/posts` - (Sample) Get all posts from JSONPlaceholder
+- `GET /api/v1/posts/{id}` - (Sample) Get a specific post by ID
 - `GET /swagger/index.html` - Swagger UI documentation
+- `POST /api/v1/directions/{交通手段}` - ルート検索
+- `GET /api/v1/search?q={検索キーワード}` - 目的地候補取得
+  - ここから取得 https://wiki.openstreetmap.org/wiki/JA:Nominatim
+
+/search?q=新宿駅&format=json&limit=5
 
 ### Swagger Documentation
 
