@@ -70,6 +70,10 @@ func main() {
 		v1.GET("/posts", getPosts)
 		v1.GET("/posts/:id", getPostByID)
 		v1.GET("/health", getHealth)
+		// 経路検索
+		v1.POST("/directions/bicycle", postDirections)
+		// 目的地検索
+		v1.GET("/search", getSearch)
 	}
 
 	// Start server on port 8080
@@ -79,7 +83,7 @@ func main() {
 // getPosts godoc
 // @Summary Get all posts from JSONPlaceholder
 // @Description Fetch all posts from JSONPlaceholder API and return formatted response
-// @Tags posts
+// @Tags example
 // @Accept json
 // @Produce json
 // @Success 200 {array} PostResponse
@@ -135,7 +139,7 @@ func getPosts(c *gin.Context) {
 // getPostByID godoc
 // @Summary Get a post by ID from JSONPlaceholder
 // @Description Fetch a specific post by ID from JSONPlaceholder API and return formatted response
-// @Tags posts
+// @Tags example
 // @Accept json
 // @Produce json
 // @Param id path int true "Post ID"
