@@ -2,10 +2,9 @@
 
 # Script to generate OpenAPI 3.0.3 specification from Go Gin swagger annotations
 # This script follows the workflow requested:
-# 1. Run swag init to generate Swagger 2.0 in api/docs/
-# 2. Convert Swagger 2.0 to OpenAPI 3.0.3 
-# 3. Place result in openapi-specifications/api.swagger.json
-# 4. Verify npm commands work
+# 1. Run go-swagger3 init to generate Swagger 3.0.3 in api/docs/
+# 2. Place result in openapi-specifications/api.swagger.json
+# 3. Verify npm commands work
 
 set -e
 
@@ -17,24 +16,24 @@ if [ ! -f "api/main.go" ]; then
     exit 1
 fi
 
-# Step 1: Install swag if not available
-echo "📦 Checking swag installation..."
-if ! command -v swag &> /dev/null; then
+# Step 1: Install go-swagger3 if not available
+echo "📦 Checking go-swagger3 installation..."
+if ! command -v go-swagger3 &> /dev/null; then
     echo "Installing swag..."
     export PATH=$PATH:$(go env GOPATH)/bin
-    cd api && go install github.com/swaggo/swag/cmd/swag@latest
+    cd api && go install github.com/parvez3019/go-swagger3@latest
     cd ..
 else
-    echo "✅ swag is already installed"
+    echo "✅ go-swagger3 is already installed"
 fi
 
 # Ensure PATH includes Go bin directory
 export PATH=$PATH:$(go env GOPATH)/bin
 
-# Step 2: Generate Swagger 2.0 documentation
-echo "📝 Generating Swagger 2.0 documentation with swag init..."
+# Step 2: Generate Swagger 3.0.3 documentation
+echo "📝 Generating Swagger 3.0.3 documentation with go-swagger3..."
 cd api
-swag init
+go-swagger3 --module-path . --output ./docs/swagger.json --schema-without-pkg
 cd ..
 
 # Verify swagger.json was generated
@@ -42,11 +41,7 @@ if [ ! -f "api/docs/swagger.json" ]; then
     echo "❌ Error: api/docs/swagger.json was not generated"
     exit 1
 fi
-echo "✅ Swagger 2.0 documentation generated at api/docs/swagger.json"
-
-# Step 3: Convert Swagger 2.0 to OpenAPI 3.0.3
-echo "🔄 Converting Swagger 2.0 to OpenAPI 3.0.3..."
-go run convert-swagger.go
+echo "✅ Swagger 3.0.3 documentation generated at api/docs/swagger.json"
 
 # Verify OpenAPI 3.0.3 was generated
 if [ ! -f "openapi-specifications/api.swagger.json" ]; then
@@ -90,7 +85,7 @@ echo ""
 echo "🎉 All steps completed successfully!"
 echo ""
 echo "Generated files:"
-echo "  - api/docs/swagger.json (Swagger 2.0 from swag init)"
+echo "  - api/docs/swagger.json (Swagger 3.0.3 from go-swagger3)"
 echo "  - openapi-specifications/api.swagger.json (OpenAPI 3.0.3 converted)"
 echo "  - mobile-app/schema/api.d.ts (TypeScript definitions)"
 echo ""

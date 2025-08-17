@@ -15,7 +15,7 @@ type SearchResponse struct {
 //TODO 定義中
 
 // getSearch godoc
-// @Summary 目的地候補検索
+// @Title 目的地候補検索
 // @Description Nominatimのレスポンスを横流し(https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5)
 // @Tags map
 // @Accept json

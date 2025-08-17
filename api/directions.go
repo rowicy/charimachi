@@ -11,9 +11,9 @@ import (
 type ORSDirectionsRequest struct {
 	// Required field - The waypoints to use for the route as an array of longitude/latitude pairs in WGS 84
 	Coordinates        [][]float64 `json:"coordinates" validate:"required"`
-	ViaBikeParking     bool
-	AvoidbBusStops     bool
-	AvoidTrafficLights bool
+	ViaBikeParking     bool        `json:"viaBikeParking"`
+	AvoidBusStops      bool        `json:"avoidBusStops"`
+	AvoidTrafficLights bool        `json:"avoidTrafficLights"`
 
 	// // Optional fields
 	// ID                 string                   `json:"id,omitempty"`
@@ -408,7 +408,7 @@ type ORSErrorResponse struct {
 // TODO 定義中
 
 // postDirections godoc
-// @Summary 自転車ルート検索
+// @Title 自転車ルート検索
 // @Description 出発地点の座標と目的地の座標をPOSTのbodyで受け取り、OpenRouteServiceのAPIを呼び出してルート情報を取得する
 // @Tags map
 // @Accept json

@@ -6,7 +6,7 @@ This is a template API implementation using Go and the Gin framework, with autom
 
 - **[Go](https://go.dev/)** - Programming language
 - **[Gin](https://gin-gonic.com/)** - Web framework
-- **[gin-swagger](https://github.com/swaggo/gin-swagger)** - Swagger/OpenAPI documentation generation
+- **[go-swagger3](https://github.com/parvez3019/go-swagger3)** - Swagger/OpenAPI documentation generation
 
 ## Features
 

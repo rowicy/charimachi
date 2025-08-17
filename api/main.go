@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "template-mobile-app-api/docs"
 )
@@ -61,9 +59,6 @@ func main() {
 		c.Next()
 	})
 
-	// Swagger documentation
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	// API routes
 	v1 := r.Group("/api/v1")
 	{
@@ -81,7 +76,7 @@ func main() {
 }
 
 // getPosts godoc
-// @Summary Get all posts from JSONPlaceholder
+// @Title Get all posts from JSONPlaceholder
 // @Description Fetch all posts from JSONPlaceholder API and return formatted response
 // @Tags example
 // @Accept json
@@ -137,7 +132,7 @@ func getPosts(c *gin.Context) {
 }
 
 // getPostByID godoc
-// @Summary Get a post by ID from JSONPlaceholder
+// @Title Get a post by ID from JSONPlaceholder
 // @Description Fetch a specific post by ID from JSONPlaceholder API and return formatted response
 // @Tags example
 // @Accept json
@@ -210,7 +205,7 @@ func getPostByID(c *gin.Context) {
 }
 
 // getHealth godoc
-// @Summary Health check endpoint
+// @Title Health check endpoint
 // @Description Returns the health status of the API
 // @Tags health
 // @Accept json
