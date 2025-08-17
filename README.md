@@ -1,3 +1,7 @@
+# ChariMachi
+
+![icon](./img/icon.png)
+
 # template-mobile-app
 
 Templates for mobile app development.
