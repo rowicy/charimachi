@@ -1,0 +1,238 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "description": "This is a template API server using Go Gin framework",
+        "title": "Template Mobile App API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080/api/v1",
+            "description": "Development server"
+        }
+    ],
+    "paths": {
+        "/health": {
+            "get": {
+                "description": "Returns the health status of the API",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    }
+                },
+                "summary": "Health check endpoint",
+                "tags": [
+                    "health"
+                ]
+            }
+        },
+        "/posts": {
+            "get": {
+                "description": "Fetch all posts from JSONPlaceholder API and return formatted response",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": [
+                                            {
+                                                "body": "Sample post body content",
+                                                "formattedAt": "2024-01-01T12:00:00Z",
+                                                "id": 1,
+                                                "title": "Sample Post Title",
+                                                "userId": 1
+                                            },
+                                            {
+                                                "body": "Another post body content",
+                                                "formattedAt": "2024-01-01T12:30:00Z",
+                                                "id": 2,
+                                                "title": "Another Post Title",
+                                                "userId": 2
+                                            }
+                                        ]
+                                    }
+                                },
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/PostResponse"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Get all posts from JSONPlaceholder",
+                "tags": [
+                    "posts"
+                ]
+            }
+        },
+        "/posts/{id}": {
+            "get": {
+                "description": "Fetch a specific post by ID from JSONPlaceholder API and return formatted response",
+                "parameters": [
+                    {
+                        "description": "Post ID",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "success": {
+                                        "value": {
+                                            "body": "Sample post body content",
+                                            "formattedAt": "2024-01-01T12:00:00Z",
+                                            "id": 1,
+                                            "title": "Sample Post Title",
+                                            "userId": 1
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "error": {
+                                        "value": {
+                                            "error": "Internal server error",
+                                            "message": "Failed to fetch data"
+                                        }
+                                    }
+                                },
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Get a post by ID from JSONPlaceholder",
+                "tags": [
+                    "posts"
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorResponse": {
+                "properties": {
+                    "error": {
+                        "example": "Internal server error",
+                        "type": "string"
+                    },
+                    "message": {
+                        "example": "Failed to fetch data",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "PostResponse": {
+                "properties": {
+                    "body": {
+                        "example": "Sample post body content",
+                        "type": "string"
+                    },
+                    "formattedAt": {
+                        "example": "2024-01-01T12:00:00Z",
+                        "type": "string"
+                    },
+                    "id": {
+                        "example": 1,
+                        "type": "integer"
+                    },
+                    "title": {
+                        "example": "Sample Post Title",
+                        "type": "string"
+                    },
+                    "userId": {
+                        "example": 1,
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

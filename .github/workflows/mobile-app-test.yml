@@ -1,0 +1,42 @@
+name: Test Mobile App
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/mobile-app-test.yml
+      - mobile-app/**
+
+env:
+  WORKING_DIRECTORY: mobile-app
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: mobile-app/.nvmrc
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate API Schema
+        run: |
+          npm run gen-schema:example
+          npm run gen-schema
+      - name: Run ls-lint
+        uses: ls-lint/action@v2
+        with:
+          config: ${{ env.WORKING_DIRECTORY }}/.ls-lint.yml
+          workdir: ${{ env.WORKING_DIRECTORY }}
+          debug: true
+      - name: Run ESLint
+        run: npm run lint
+      - name: Run Prettier
+        run: npm run format:check
+      - name: Run typechecking
+        run: npm run test:ts

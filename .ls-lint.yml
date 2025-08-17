@@ -1,0 +1,13 @@
+ls:
+  dir: kebab-case
+  .md: SCREAMING_SNAKE_CASE
+  .github:
+    workflows:
+      .yml: kebab-case
+
+ignore:
+  - .git
+  - .vscode
+  - api
+  - mobile-app
+  - "!*.md"

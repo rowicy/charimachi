@@ -1,0 +1,31 @@
+name: Test Project
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: mobile-app/.nvmrc
+          
+      - name: Test OpenAPI generation workflow
+        run: |
+          chmod +x ./generate-openapi.sh
+          ./generate-openapi.sh
+          
+      - name: Run ls-lint
+        uses: ls-lint/action@v2
+        with:
+          debug: true

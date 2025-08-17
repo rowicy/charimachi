@@ -1,0 +1,17 @@
+ls:
+  dir: kebab-case
+  .js: kebab-case
+  .ts: kebab-case
+  .tsx: kebab-case
+  .png: kebab-case
+  .jpg: kebab-case
+  .jpeg: kebab-case
+  .svg: kebab-case
+
+ignore:
+  - node_modules
+  - .vscode
+  - app/**/_layout.tsx
+  - app/**/+not-found.tsx
+  - assets/images/**/[!@]*@2x.*
+  - assets/images/**/[!@]*@3x.*
