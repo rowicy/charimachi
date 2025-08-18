@@ -85,7 +85,7 @@ echo "✅ TypeScript definitions generated at mobile-app/schema/api.d.ts"
 # Test mock command (start and immediately stop)
 echo "Testing npm run mock..."
 cd mobile-app
-timeout 5s npm run mock || true
+( npm run mock & pid=$!; sleep 5; kill -0 $pid 2>/dev/null && kill -9 $pid ) || true
 cd ..
 echo "✅ Mock server test passed"
 
