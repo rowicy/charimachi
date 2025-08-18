@@ -12,7 +12,7 @@ This is a template API implementation using Go and the Gin framework, with autom
 
 - RESTful API endpoints
 - Automatic Swagger/OpenAPI documentation
-- **Automated Swagger 2.0 to OpenAPI 3.0.3 conversion** (pure Go implementation)
+- **Automated Swagger 2.0 to OpenAPI 3.0.0 conversion** (pure Go implementation)
 - CORS support
 - Health check endpoint
 - Example integration with external API (JSONPlaceholder)
@@ -49,7 +49,7 @@ This is a template API implementation using Go and the Gin framework, with autom
 
 ### Running the API
 
-1. Generate OpenAPI 3.0.3 documentation:
+1. Generate OpenAPI 3.0.0 documentation:
    ```bash
    # From repository root directory
    ./generate-openapi.sh
@@ -77,17 +77,17 @@ The API will be available at `http://localhost:8080`
 The API automatically generates OpenAPI/Swagger documentation through the following workflow:
 
 1. **Swagger 2.0 Generation**: `swag init` generates Swagger 2.0 format in `docs/swagger.json`
-2. **Conversion to OpenAPI 3.0.3**: A Go converter transforms it to OpenAPI 3.0.3 format
+2. **Conversion to OpenAPI 3.0.0**: A Go converter transforms it to OpenAPI 3.0.0 format
 3. **Output**: Final specification is placed in `../openapi-specifications/api.swagger.json`
 
 The documentation is:
 
 - Served at `/swagger/index.html` when the server is running (Swagger 2.0 format)
-- Available as OpenAPI 3.0.3 in `../openapi-specifications/api.swagger.json` for tooling
+- Available as OpenAPI 3.0.0 in `../openapi-specifications/api.swagger.json` for tooling
 
 ### Development
 
-To regenerate OpenAPI 3.0.3 documentation after making changes:
+To regenerate OpenAPI 3.0.0 documentation after making changes:
 
 **Complete workflow (Recommended):**
 
@@ -99,9 +99,7 @@ To regenerate OpenAPI 3.0.3 documentation after making changes:
 This script will:
 
 1. Run `swag init` to generate Swagger 2.0 documentation in `api/docs/`
-2. Convert Swagger 2.0 to OpenAPI 3.0.3 format using a Go converter
-3. Place the result in `openapi-specifications/api.swagger.json`
-4. Test that `npm run gen-schema` and `npm run mock` work correctly
+2. Test that `npm run gen-schema` and `npm run mock` work correctly
 
 **Manual steps:**
 
@@ -109,10 +107,7 @@ This script will:
 # 1. Generate Swagger 2.0
 cd api && swag init && cd ..
 
-# 2. Convert to OpenAPI 3.0.3
-go run convert-swagger.go
-
-# 3. Test React Native tooling
+# 2. Test React Native tooling
 cd mobile-app
 npm run gen-schema  # Generate TypeScript definitions
 npm run mock        # Start mock server on port 3001
