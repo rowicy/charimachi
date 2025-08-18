@@ -3,7 +3,7 @@
 run_api_dev:
 	cd api && go mod tidy && \
 	( \
-		trap "exit" INT; \
+		trap 'echo "SIGINT received, killing server..."; kill -9 $$(lsof -ti tcp:8080 2>/dev/null) 2>/dev/null; exit' INT; \
 		go run . & \
 		sleep 2; \
 		(open http://localhost:8080/swagger/index.html || xdg-open http://localhost:8080/swagger/index.html); \
