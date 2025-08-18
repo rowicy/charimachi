@@ -143,7 +143,7 @@ To generate the OpenAPI definitions, run the following command from the reposito
 This script will:
 
 1. Generate Swagger 2.0 documentation using `swag init` in the API directory
-2. Convert the Swagger 2.0 specification to OpenAPI 3.0.3 format
+2. Convert the Swagger 2.0 specification to OpenAPI 3.0.0 format
 3. Place the result in `openapi-specifications/api.swagger.json`
 4. Verify that React Native type generation and mock server commands work correctly
 
