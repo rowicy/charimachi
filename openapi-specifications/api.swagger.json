@@ -987,6 +987,67 @@
                 "type": "object"
             },
             "SearchResponse": {
+                "properties": {
+                    "addresstype": {
+                        "description": "アドレスの種類（例: city, house, railway）",
+                        "type": "string"
+                    },
+                    "boundingbox": {
+                        "description": "範囲 [南緯, 北緯, 西経, 東経]",
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "class": {
+                        "description": "分類（例: railway, building, amenity など）",
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "description": "住所や施設名などの連結",
+                        "type": "string"
+                    },
+                    "importance": {
+                        "description": "検索結果の重要度スコア",
+                        "type": "number"
+                    },
+                    "lat": {
+                        "description": "緯度",
+                        "type": "string"
+                    },
+                    "licence": {
+                        "description": "データのライセンス情報",
+                        "type": "string"
+                    },
+                    "lon": {
+                        "description": "経度",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "OSM に登録されている名前",
+                        "type": "string"
+                    },
+                    "osm_id": {
+                        "description": "OSM 内の要素ID",
+                        "type": "integer"
+                    },
+                    "osm_type": {
+                        "description": "OSM 要素の種類 (node, way, relation)",
+                        "type": "string"
+                    },
+                    "place_id": {
+                        "description": "https://nominatim.openstreetmap.org/search?q={Client input}\u0026format=json\u0026limit=5\nのレスポンスを構造体に",
+                        "type": "integer"
+                    },
+                    "place_rank": {
+                        "description": "検索結果の粒度を示すランク",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "分類のサブタイプ（例: stop, station, bus_station など）",
+                        "type": "string"
+                    }
+                },
                 "type": "object"
             },
             "WarningPoint": {
