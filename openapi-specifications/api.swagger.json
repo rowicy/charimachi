@@ -8,26 +8,62 @@
     },
     "paths": {
         "/directions/bicycle": {
-            "post": {
-                "description": "出発地点の座標と目的地の座標をPOSTのbodyで受け取り、OpenRouteServiceのAPIを呼び出してルート情報を取得する",
+            "get": {
+                "description": "出発地点と目的地の座標をクエリパラメータで受け取り、OpenRouteServiceのAPIを呼び出してルート情報を取得する",
                 "tags": [
                     "map"
                 ],
                 "summary": "自転車ルート検索",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/main.ORSDirectionsRequest"
-                            }
+                "parameters": [
+                    {
+                        "description": "出発地点の座標 (経度,緯度)",
+                        "name": "start",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     },
-                    "description": "自転車ルート検索リクエスト",
-                    "required": true
-                },
+                    {
+                        "description": "目的地の座標 (経度,緯度)",
+                        "name": "end",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "自転車駐輪場経由ルート",
+                        "name": "via_bike_parking",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    },
+                    {
+                        "description": "バス停回避",
+                        "name": "avoid_bus_stops",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    },
+                    {
+                        "description": "信号回避",
+                        "name": "avoid_traffic_lights",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "例: 距離109.6m, 所要時間32.9秒, 警告ポイント2件, ルート座標6点, features配列1件",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -37,7 +73,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "リクエストパラメータ不正",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -47,7 +83,7 @@
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "ルートが見つからない",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -57,7 +93,7 @@
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "サーバー内部エラー",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -180,7 +216,7 @@
                         "$ref": "#/components/schemas/main.ORSMetadata"
                     },
                     "type": {
-                        "description": "https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/post\nのレスポンスを構造体に",
+                        "description": "https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get\nのレスポンスを構造体に",
                         "type": "string"
                     },
                     "warningPoints": {
@@ -202,89 +238,6 @@
                     "message": {
                         "type": "string",
                         "example": "Failed to fetch data"
-                    }
-                }
-            },
-            "main.ORSAlternativeRoutes": {
-                "type": "object",
-                "properties": {
-                    "share_factor": {
-                        "type": "number"
-                    },
-                    "target_count": {
-                        "type": "integer"
-                    },
-                    "weight_factor": {
-                        "type": "number"
-                    }
-                }
-            },
-            "main.ORSCustomModel": {
-                "type": "object",
-                "properties": {
-                    "areas": {
-                        "type": "object",
-                        "additionalProperties": true
-                    },
-                    "distance_influence": {
-                        "type": "number"
-                    },
-                    "priority": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/main.ORSCustomRule"
-                        }
-                    },
-                    "speed": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/main.ORSCustomRule"
-                        }
-                    }
-                }
-            },
-            "main.ORSCustomRule": {
-                "type": "object",
-                "properties": {
-                    "condition": {
-                        "type": "string"
-                    },
-                    "keyword": {
-                        "type": "string"
-                    },
-                    "operation": {
-                        "type": "string"
-                    },
-                    "value": {
-                        "type": "number"
-                    }
-                }
-            },
-            "main.ORSDirectionsRequest": {
-                "type": "object",
-                "required": [
-                    "coordinates"
-                ],
-                "properties": {
-                    "avoidTrafficLights": {
-                        "type": "boolean"
-                    },
-                    "avoidbBusStops": {
-                        "type": "boolean"
-                    },
-                    "coordinates": {
-                        "description": "Required field - The waypoints to use for the route as an array of longitude/latitude pairs in WGS 84",
-                        "type": "array",
-                        "items": {
-                            "type": "array",
-                            "items": {
-                                "type": "number",
-                                "format": "float64"
-                            }
-                        }
-                    },
-                    "viaBikeParking": {
-                        "type": "boolean"
                     }
                 }
             },
@@ -344,10 +297,6 @@
             "main.ORSFeatureProperties": {
                 "type": "object",
                 "properties": {
-                    "extras": {
-                        "type": "object",
-                        "additionalProperties": true
-                    },
                     "segments": {
                         "type": "array",
                         "items": {
@@ -356,12 +305,6 @@
                     },
                     "summary": {
                         "$ref": "#/components/schemas/main.ORSSummary"
-                    },
-                    "warnings": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/main.ORSWarning"
-                        }
                     },
                     "way_points": {
                         "type": "array",
@@ -389,23 +332,6 @@
                     }
                 }
             },
-            "main.ORSManeuver": {
-                "type": "object",
-                "properties": {
-                    "bearing_after": {
-                        "type": "integer"
-                    },
-                    "bearing_before": {
-                        "type": "integer"
-                    },
-                    "location": {
-                        "type": "array",
-                        "items": {
-                            "type": "number"
-                        }
-                    }
-                }
-            },
             "main.ORSMetadata": {
                 "type": "object",
                 "properties": {
@@ -415,16 +341,10 @@
                     "engine": {
                         "$ref": "#/components/schemas/main.ORSEngine"
                     },
-                    "id": {
-                        "type": "string"
-                    },
                     "query": {
                         "$ref": "#/components/schemas/main.ORSQuery"
                     },
                     "service": {
-                        "type": "string"
-                    },
-                    "system_message": {
                         "type": "string"
                     },
                     "timestamp": {
@@ -432,48 +352,9 @@
                     }
                 }
             },
-            "main.ORSProfileParams": {
-                "type": "object",
-                "properties": {
-                    "allow_unsuitable": {
-                        "type": "boolean"
-                    },
-                    "restrictions": {
-                        "$ref": "#/components/schemas/main.ORSRestrictions"
-                    },
-                    "surface_quality_known": {
-                        "type": "boolean"
-                    },
-                    "weightings": {
-                        "$ref": "#/components/schemas/main.ORSWeightings"
-                    }
-                }
-            },
             "main.ORSQuery": {
                 "type": "object",
                 "properties": {
-                    "alternative_routes": {
-                        "$ref": "#/components/schemas/main.ORSAlternativeRoutes"
-                    },
-                    "attributes": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "bearings": {
-                        "type": "array",
-                        "items": {
-                            "type": "array",
-                            "items": {
-                                "type": "number",
-                                "format": "float64"
-                            }
-                        }
-                    },
-                    "continue_straight": {
-                        "type": "boolean"
-                    },
                     "coordinates": {
                         "type": "array",
                         "items": {
@@ -484,170 +365,13 @@
                             }
                         }
                     },
-                    "custom_model": {
-                        "$ref": "#/components/schemas/main.ORSCustomModel"
-                    },
-                    "elevation": {
-                        "type": "boolean"
-                    },
-                    "extra_info": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "geometry": {
-                        "type": "boolean"
-                    },
-                    "geometry_simplify": {
-                        "type": "boolean"
-                    },
-                    "id": {
+                    "format": {
                         "type": "string"
                     },
-                    "ignore_transfers": {
-                        "type": "boolean"
-                    },
-                    "instructions": {
-                        "type": "boolean"
-                    },
-                    "instructions_format": {
+                    "profile": {
                         "type": "string"
                     },
-                    "language": {
-                        "type": "string"
-                    },
-                    "maneuvers": {
-                        "type": "boolean"
-                    },
-                    "maximum_speed": {
-                        "type": "number"
-                    },
-                    "options": {
-                        "$ref": "#/components/schemas/main.ORSRouteOptions"
-                    },
-                    "preference": {
-                        "type": "string"
-                    },
-                    "radiuses": {
-                        "type": "array",
-                        "items": {
-                            "type": "number"
-                        }
-                    },
-                    "roundabout_exits": {
-                        "type": "boolean"
-                    },
-                    "schedule": {
-                        "type": "boolean"
-                    },
-                    "schedule_duration": {
-                        "type": "string"
-                    },
-                    "schedule_rows": {
-                        "type": "integer"
-                    },
-                    "skip_segments": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
-                    },
-                    "suppress_warnings": {
-                        "type": "boolean"
-                    },
-                    "units": {
-                        "type": "string"
-                    },
-                    "walking_time": {
-                        "type": "string"
-                    }
-                }
-            },
-            "main.ORSRestrictions": {
-                "type": "object",
-                "properties": {
-                    "axleload": {
-                        "type": "number"
-                    },
-                    "hazmat": {
-                        "type": "boolean"
-                    },
-                    "height": {
-                        "type": "number"
-                    },
-                    "length": {
-                        "type": "number"
-                    },
-                    "maximum_incline": {
-                        "type": "integer"
-                    },
-                    "maximum_sloped_kerb": {
-                        "type": "number"
-                    },
-                    "minimum_width": {
-                        "type": "number"
-                    },
-                    "smoothness_type": {
-                        "type": "string"
-                    },
-                    "surface_type": {
-                        "type": "string"
-                    },
-                    "track_type": {
-                        "type": "string"
-                    },
-                    "weight": {
-                        "type": "number"
-                    },
-                    "width": {
-                        "type": "number"
-                    }
-                }
-            },
-            "main.ORSRoundTripOptions": {
-                "type": "object",
-                "properties": {
-                    "length": {
-                        "type": "number"
-                    },
-                    "points": {
-                        "type": "integer"
-                    },
-                    "seed": {
-                        "type": "integer"
-                    }
-                }
-            },
-            "main.ORSRouteOptions": {
-                "type": "object",
-                "properties": {
-                    "avoid_borders": {
-                        "type": "string"
-                    },
-                    "avoid_countries": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "avoid_features": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "avoid_polygons": {
-                        "type": "object",
-                        "additionalProperties": true
-                    },
-                    "profile_params": {
-                        "$ref": "#/components/schemas/main.ORSProfileParams"
-                    },
-                    "round_trip": {
-                        "$ref": "#/components/schemas/main.ORSRoundTripOptions"
-                    },
-                    "vehicle_type": {
+                    "profileName": {
                         "type": "string"
                     }
                 }
@@ -655,19 +379,10 @@
             "main.ORSSegment": {
                 "type": "object",
                 "properties": {
-                    "avgspeed": {
-                        "type": "number"
-                    },
-                    "detourfactor": {
-                        "type": "number"
-                    },
                     "distance": {
                         "type": "number"
                     },
                     "duration": {
-                        "type": "number"
-                    },
-                    "percentage": {
                         "type": "number"
                     },
                     "steps": {
@@ -687,20 +402,8 @@
                     "duration": {
                         "type": "number"
                     },
-                    "exit_bearings": {
-                        "type": "array",
-                        "items": {
-                            "type": "number"
-                        }
-                    },
                     "instruction": {
                         "type": "string"
-                    },
-                    "maneuver": {
-                        "$ref": "#/components/schemas/main.ORSManeuver"
-                    },
-                    "mode": {
-                        "type": "integer"
                     },
                     "name": {
                         "type": "string"
@@ -724,34 +427,6 @@
                     },
                     "duration": {
                         "type": "number"
-                    }
-                }
-            },
-            "main.ORSWarning": {
-                "type": "object",
-                "properties": {
-                    "code": {
-                        "type": "integer"
-                    },
-                    "message": {
-                        "type": "string"
-                    }
-                }
-            },
-            "main.ORSWeightings": {
-                "type": "object",
-                "properties": {
-                    "green": {
-                        "type": "number"
-                    },
-                    "quiet": {
-                        "type": "number"
-                    },
-                    "shadow": {
-                        "type": "number"
-                    },
-                    "steepness_difficulty": {
-                        "type": "integer"
                     }
                 }
             },

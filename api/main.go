@@ -47,7 +47,7 @@ func main() {
 	{
 		v1.GET("/health", getHealth)
 		// 経路検索
-		v1.POST("/directions/bicycle", postDirections)
+		v1.GET("/directions/bicycle", getDirections)
 		// 目的地検索
 		v1.GET("/search", getSearch)
 	}
