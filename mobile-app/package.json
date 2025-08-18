@@ -15,6 +15,7 @@
     "mock": "prism mock ../openapi-specifications/api.swagger.json --port 8080",
     "gen-schema:example": "openapi-typescript ../openapi-specifications/example.swagger.json -o ./schema/example.d.ts",
     "gen-schema": "openapi-typescript ../openapi-specifications/api.swagger.json -o ./schema/api.d.ts",
+    "swagger2openapi": "swagger2openapi ../api/docs/swagger.json -o ../openapi-specifications/api.swagger.json",
     "lint": "expo lint",
     "lint:fix": "expo lint --fix",
     "format": "prettier --write .",
@@ -81,6 +82,7 @@
     "jscodeshift": "^0.15.2",
     "openapi-typescript": "^7.8.0",
     "prettier": "^3.6.2",
+    "swagger2openapi": "^7.0.8",
     "typescript": "~5.8.3"
   },
   "private": true
