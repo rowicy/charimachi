@@ -24,8 +24,8 @@ Always reference these instructions first and fallback to search or bash command
 - This script orchestrates:
   1. Go dependencies installation (~20 seconds)
   2. Swagger 2.0 generation via `swag init` (~1 second)
-  3. OpenAPI 3.0.0 conversion (~1 second)
-  4. npm install for mobile app (~2 minutes)
+  3. npm install for mobile app (~2 minutes)
+  4. OpenAPI 3.0.0 conversion (~1 second)
   5. TypeScript schema generation (~1 second each)
   6. Mock server validation (~1 second)
 
