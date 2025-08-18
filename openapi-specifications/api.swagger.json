@@ -91,102 +91,6 @@
                 }
             }
         },
-        "/posts": {
-            "get": {
-                "description": "Fetch all posts from JSONPlaceholder API and return formatted response",
-                "tags": [
-                    "example"
-                ],
-                "summary": "Get all posts from JSONPlaceholder",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/main.PostResponse"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/main.ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/posts/{id}": {
-            "get": {
-                "description": "Fetch a specific post by ID from JSONPlaceholder API and return formatted response",
-                "tags": [
-                    "example"
-                ],
-                "summary": "Get a post by ID from JSONPlaceholder",
-                "parameters": [
-                    {
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/main.PostResponse"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/main.ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/main.ErrorResponse"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/main.ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/search": {
             "get": {
                 "description": "Nominatimのレスポンスを横流し(https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5)",
@@ -851,33 +755,69 @@
                     }
                 }
             },
-            "main.PostResponse": {
+            "main.SearchResponse": {
                 "type": "object",
                 "properties": {
-                    "body": {
-                        "type": "string",
-                        "example": "Sample post body content"
+                    "addresstype": {
+                        "description": "アドレスの種類（例: city, house, railway）",
+                        "type": "string"
                     },
-                    "formattedAt": {
-                        "type": "string",
-                        "example": "2024-01-01T12:00:00Z"
+                    "boundingbox": {
+                        "description": "範囲 [南緯, 北緯, 西経, 東経]",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     },
-                    "id": {
-                        "type": "integer",
-                        "example": 1
+                    "class": {
+                        "description": "分類（例: railway, building, amenity など）",
+                        "type": "string"
                     },
-                    "title": {
-                        "type": "string",
-                        "example": "Sample Post Title"
+                    "display_name": {
+                        "description": "住所や施設名などの連結",
+                        "type": "string"
                     },
-                    "userId": {
-                        "type": "integer",
-                        "example": 1
+                    "importance": {
+                        "description": "検索結果の重要度スコア",
+                        "type": "number"
+                    },
+                    "lat": {
+                        "description": "緯度",
+                        "type": "string"
+                    },
+                    "licence": {
+                        "description": "データのライセンス情報",
+                        "type": "string"
+                    },
+                    "lon": {
+                        "description": "経度",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "OSM に登録されている名前",
+                        "type": "string"
+                    },
+                    "osm_id": {
+                        "description": "OSM 内の要素ID",
+                        "type": "integer"
+                    },
+                    "osm_type": {
+                        "description": "OSM 要素の種類 (node, way, relation)",
+                        "type": "string"
+                    },
+                    "place_id": {
+                        "description": "https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5\nのレスポンスを構造体に",
+                        "type": "integer"
+                    },
+                    "place_rank": {
+                        "description": "検索結果の粒度を示すランク",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "分類のサブタイプ（例: stop, station, bus_station など）",
+                        "type": "string"
                     }
                 }
-            },
-            "main.SearchResponse": {
-                "type": "object"
             },
             "main.WarningPoint": {
                 "type": "object",
