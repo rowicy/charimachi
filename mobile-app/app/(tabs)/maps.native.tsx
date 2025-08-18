@@ -3,6 +3,10 @@ import { View, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 // @ts-ignore - react-native-maps has TypeScript compatibility issues with strict mode
 import MapView, { UrlTile, Marker, Polyline } from "react-native-maps";
 import { useCurrentLocation } from "@/hooks/use-location";
+import { $api } from "@/api-client/api";
+import { Text } from "@/components/ui/text";
+import { Box } from "@/components/ui/box";
+import Skeleton from "@/components/skeleton";
 
 // Sample coordinates for the route
 const tokyoTower = {
@@ -42,6 +46,19 @@ export default function MapsScreen() {
       }
     : tokyoTower;
 
+  const { data: directions, isLoading: isLoadingDirections } = $api.useQuery(
+    "post",
+    "/directions/bicycle",
+    {
+      body: {
+        avoidTrafficLights: true,
+        avoidBusStops: true,
+        coordinates: [[0, 10]],
+        viaBikeParking: true,
+      },
+    },
+  );
+
   const routeCoordinates = useMemo(() => {
     if (currentLocation) {
       return [
@@ -73,7 +90,7 @@ export default function MapsScreen() {
   }, [currentLocation]);
 
   return (
-    <View className="flex-1 min-h-full flex items-center justify-center">
+    <View className="flex-1 min-h-full flex items-center justify-center relative">
       {isLoading ? (
         <ActivityIndicator />
       ) : (
@@ -134,6 +151,23 @@ export default function MapsScreen() {
           />
         </MapView>
       )}
+
+      <Box className="z-50 absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] p-4 bg-white rounded-lg shadow-lg">
+        {/* NOTE: 距離 */}
+        <SummaryItem
+          label="距離"
+          value={directions?.features?.[0]?.properties?.summary?.distance || 0}
+          isLoading={isLoadingDirections}
+        />
+
+        {/* NOTE: 所要時間 */}
+        <SummaryItem
+          label="所要時間"
+          // TODO: 現在地変更の度に所要時間を再計算する
+          value={directions?.features?.[0]?.properties?.summary?.duration || 0}
+          isLoading={isLoadingDirections}
+        />
+      </Box>
     </View>
   );
 }
@@ -144,3 +178,22 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
   },
 });
+
+function SummaryItem({
+  label,
+  value,
+  isLoading,
+}: {
+  label: string;
+  value: string | number;
+  isLoading: boolean;
+}) {
+  return (
+    <Text className="color-black text-lg flex items-center">
+      {label}:
+      <Text className="color-black flex text-lg items-center px-2">
+        {isLoading ? <Skeleton /> : value}分
+      </Text>
+    </Text>
+  );
+}
