@@ -1,12 +1,13 @@
 package main
 
 import (
-
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "template-mobile-app-api/docs"
+
+	"github.com/joho/godotenv"
 )
 
 // @title Template Mobile App API
@@ -15,7 +16,6 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 
-
 // ErrorResponse represents an error response
 type ErrorResponse struct {
 	Error   string `json:"error" example:"Internal server error"`
@@ -23,6 +23,12 @@ type ErrorResponse struct {
 }
 
 func main() {
+	// Load environment variables from .env file
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading .env file")
+	}
+
 	r := gin.Default()
 
 	// Add CORS middleware

@@ -1,7 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"net/url"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -210,136 +216,104 @@ func getDirections(c *gin.Context) {
 	// クエリパラメータの取得
 	start := c.Query("start")
 	end := c.Query("end")
-	viaBikeParking := c.DefaultQuery("via_bike_parking", "false")
-	avoidBusStops := c.DefaultQuery("avoid_bus_stops", "false")
-	avoidTrafficLights := c.DefaultQuery("avoid_traffic_lights", "false")
+	_ = c.DefaultQuery("via_bike_parking", "false")
+	_ = c.DefaultQuery("avoid_bus_stops", "false")
+	_ = c.DefaultQuery("avoid_traffic_lights", "false")
+	// バリデーション
+	if start == "" || end == "" {
+		var er ORSErrorResponse
+		er.Error.Code = http.StatusBadRequest
+		er.Error.Message = "start and end query parameters are required"
+		c.JSON(http.StatusBadRequest, er)
+		return
+	}
 
-	// TODO: start, endの座標をパースしてOpenRouteServiceのAPIを呼び出す
-	// TODO: via_bike_parking, avoid_bus_stops, avoid_traffic_lightsの処理を実装
-	_ = start
-	_ = end
-	_ = viaBikeParking
-	_ = avoidBusStops
-	_ = avoidTrafficLights
+	// APIキー取得
+	apiKey := os.Getenv("OPEN_ROUTE_SERVICE_API_KEY")
+	if apiKey == "" {
+		var er ORSErrorResponse
+		er.Error.Code = http.StatusInternalServerError
+		er.Error.Message = "OPEN_ROUTE_SERVICE_API_KEY is not set"
+		c.JSON(http.StatusInternalServerError, er)
+		return
+	}
 
-	// ORSへのリクエスト
-	// ルート整形処理
+	// ORSへリクエスト
+	base := "https://api.openrouteservice.org/v2/directions/cycling-road"
+	u, err := url.Parse(base)
+	if err != nil {
+		var er ORSErrorResponse
+		er.Error.Code = http.StatusInternalServerError
+		er.Error.Message = fmt.Sprintf("invalid base url: %v", err)
+		c.JSON(http.StatusInternalServerError, er)
+		return
+	}
 
-	directionsResponse := DirectionsResponse{
-		Type: "FeatureCollection",
-		BBox: []float64{139.745496, 35.658588, 139.746388, 35.659073},
-		Features: []ORSFeature{
-			{
-				BBox: []float64{139.745496, 35.658588, 139.746388, 35.659073},
-				Type: "Feature",
-				Properties: ORSFeatureProperties{
-					Segments: []ORSSegment{
-						{
-							Distance: 109.6,
-							Duration: 32.9,
-							Steps: []ORSStep{
-								{
-									Distance:    26.6,
-									Duration:    15.9,
-									Type:        11,
-									Instruction: "Head southeast",
-									Name:        "-",
-									WayPoints:   []int{0, 1},
-								},
-								{
-									Distance:    3.8,
-									Duration:    2.3,
-									Type:        0,
-									Instruction: "Turn left",
-									Name:        "-",
-									WayPoints:   []int{1, 2},
-								},
-								{
-									Distance:    63.3,
-									Duration:    8.8,
-									Type:        1,
-									Instruction: "Turn right onto 東京タワー通り",
-									Name:        "東京タワー通り",
-									WayPoints:   []int{2, 3},
-								},
-								{
-									Distance:    8.0,
-									Duration:    1.1,
-									Type:        1,
-									Instruction: "Turn right onto 降車場",
-									Name:        "降車場",
-									WayPoints:   []int{3, 4},
-								},
-								{
-									Distance:    7.9,
-									Duration:    4.8,
-									Type:        0,
-									Instruction: "Turn left",
-									Name:        "-",
-									WayPoints:   []int{4, 5},
-								},
-								{
-									Distance:    0.0,
-									Duration:    0.0,
-									Type:        10,
-									Instruction: "Arrive at your destination, on the left",
-									Name:        "-",
-									WayPoints:   []int{5, 5},
-								},
-							},
-						},
-					},
-					Summary: ORSSummary{
-						Distance: 109.6,
-						Duration: 32.9,
-					},
-					WayPoints: []int{0, 5},
-				},
-				Geometry: ORSGeometry{
-					Type: "LineString",
-					Coordinates: [][]float64{
-						{139.745496, 35.659073},
-						{139.74574, 35.65894},
-						{139.745761, 35.65897},
-						{139.746365, 35.65868},
-						{139.746312, 35.658623},
-						{139.746388, 35.658588},
-					},
-				},
-			},
-		},
-		Metadata: ORSMetadata{
-			Attribution: "openrouteservice.org | OpenStreetMap contributors",
-			Service:     "routing",
-			Timestamp:   1755538285980,
-			Query: ORSQuery{
-				Coordinates: [][]float64{{139.745494, 35.659071}, {139.746396, 35.6586}},
-				Profile:     "cycling-road",
-				ProfileName: "cycling-road",
-				Format:      "json",
-			},
-			Engine: ORSEngine{
-				Version:   "9.3.0",
-				BuildDate: "2025-06-06T15:39:25Z",
-				GraphDate: "2025-08-13T04:04:04Z",
-				OSMDate:   "2025-08-04T00:00:00Z",
-			},
-		},
-		WarningPoints: []WarningPoint{
+	q := u.Query()
+	q.Set("api_key", apiKey)
+	q.Set("start", start)
+	q.Set("end", end)
+	u.RawQuery = q.Encode()
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Get(u.String())
+	if err != nil {
+		var er ORSErrorResponse
+		er.Error.Code = http.StatusBadGateway
+		er.Error.Message = err.Error()
+		c.JSON(http.StatusBadGateway, er)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		var er ORSErrorResponse
+		er.Error.Code = http.StatusBadGateway
+		er.Error.Message = fmt.Sprintf("failed to read upstream response: %v", err)
+		c.JSON(http.StatusBadGateway, er)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		var upstreamErr ORSErrorResponse
+		_ = json.Unmarshal(body, &upstreamErr)
+		if upstreamErr.Error.Message == "" {
+			upstreamErr.Error.Code = resp.StatusCode
+			upstreamErr.Error.Message = fmt.Sprintf("upstream returned status %d", resp.StatusCode)
+		}
+		c.JSON(http.StatusBadGateway, upstreamErr)
+		return
+	}
+
+	//TODO OpenRouteServiceのレスポンスをそのままレスポンスにパースしているのでorsRespを加工する処理をかく
+	var orsResp DirectionsResponse
+	if err := json.Unmarshal(body, &orsResp); err != nil {
+		var er ORSErrorResponse
+		er.Error.Code = http.StatusInternalServerError
+		er.Error.Message = fmt.Sprintf("failed to parse upstream response: %v", err)
+		c.JSON(http.StatusInternalServerError, er)
+		return
+	}
+
+	//TODO WarningPointsはサンプル
+	if orsResp.WarningPoints == nil {
+		coodinates := orsResp.Metadata.Query.Coordinates
+		orsResp.WarningPoints = []WarningPoint{
 			{
 				Type:       "intersection",
 				Name:       "地獄谷",
-				Coordinate: []float64{139.745494, 35.659071},
+				Coordinate: coodinates[1],
 				Message:    "過去に事故が多発した地点です。注意してください。",
 			},
 			{
 				Type:       "straight_road",
-				Name:       "直線道路",
-				Coordinate: []float64{139.747726, 35.689709},
+				Name:       "無限道路",
+				Coordinate: coodinates[len(coodinates)-2],
 				Message:    "この道路は直線で、速度を出しやすいです。安全運転を心掛けてください。",
 			},
-		},
+		}
 	}
 
-	c.JSON(http.StatusOK, directionsResponse)
+	c.JSON(http.StatusOK, orsResp)
 }

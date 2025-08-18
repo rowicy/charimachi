@@ -63,7 +63,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "例: 距離109.6m, 所要時間32.9秒, 警告ポイント2件, ルート座標6点, features配列1件",
+                        "description": "GeoJson形式のルート情報",
                         "content": {
                             "application/json": {
                                 "schema": {
