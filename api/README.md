@@ -61,7 +61,7 @@ This is a template API implementation using Go and the Gin framework, with autom
    go run .
 
    # Makefile from root directory
-   make
+   make run_api_dev
    ```
 
 The API will be available at `http://localhost:8080`

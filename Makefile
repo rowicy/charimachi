@@ -5,3 +5,5 @@ run_api_dev:
 	sleep 2 && \
 	(open http://localhost:8080/swagger/index.html || xdg-open http://localhost:8080/swagger/index.html)
 
+run_mobile_app:
+	cd mobile-app && npm install && npm start
