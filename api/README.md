@@ -57,7 +57,11 @@ This is a template API implementation using Go and the Gin framework, with autom
 
 2. Start the server:
    ```bash
-   go run main.go
+   # Manually from the api directory
+   go run .
+
+   # Makefile from root directory
+   make
    ```
 
 The API will be available at `http://localhost:8080`
