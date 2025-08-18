@@ -22,7 +22,8 @@ type DirectionsResponse struct {
 	BBox          []float64      `json:"bbox"`
 	Features      []ORSFeature   `json:"features"`
 	Metadata      ORSMetadata    `json:"metadata"`
-	WarningPoints []WarningPoint `json:"warningPoints"` //XXX 追加項目
+	WarningPoints []WarningPoint `json:"warning_points"` //XXX 追加項目
+	ComfortScore  int            `json:"comfort_score"`  //XXX 追加項目, 0-100のスコア
 }
 
 // XXX カスタム構造体
@@ -298,7 +299,7 @@ func getDirections(c *gin.Context) {
 
 	//TODO WarningPointsはサンプル
 	if orsResp.WarningPoints == nil {
-		coodinates := orsResp.Metadata.Query.Coordinates
+		coodinates := orsResp.Features[0].Geometry.Coordinates
 		orsResp.WarningPoints = []WarningPoint{
 			{
 				Type:       "intersection",
@@ -314,6 +315,9 @@ func getDirections(c *gin.Context) {
 			},
 		}
 	}
+
+	//TODO ComfortScoreはサンプル
+	orsResp.ComfortScore = 85 // 0-100のスコア
 
 	c.JSON(http.StatusOK, orsResp)
 }

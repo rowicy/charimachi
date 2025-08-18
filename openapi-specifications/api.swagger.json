@@ -206,6 +206,10 @@
                             "type": "number"
                         }
                     },
+                    "comfort_score": {
+                        "description": "XXX 追加項目, 0-100のスコア",
+                        "type": "integer"
+                    },
                     "features": {
                         "type": "array",
                         "items": {
@@ -219,7 +223,7 @@
                         "description": "https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get\nのレスポンスを構造体に",
                         "type": "string"
                     },
-                    "warningPoints": {
+                    "warning_points": {
                         "description": "XXX 追加項目",
                         "type": "array",
                         "items": {
