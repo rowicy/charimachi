@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 // @ts-ignore - react-native-maps has TypeScript compatibility issues with strict mode
 import MapView, { UrlTile, Marker, Polyline } from "react-native-maps";
@@ -7,6 +7,14 @@ import { $api } from "@/api-client/api";
 import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
 import Skeleton from "@/components/skeleton";
+import {
+  Checkbox,
+  CheckboxGroup,
+  CheckboxIcon,
+  CheckboxIndicator,
+  CheckboxLabel,
+} from "@/components/ui/checkbox";
+import { CheckIcon } from "@/components/ui/icon";
 
 // Sample coordinates for the route
 const tokyoTower = {
@@ -31,10 +39,17 @@ const tokyoSkytree = {
   longitude: 139.8107,
 };
 
+const MODES = {
+  via_bike_parking: "自転車駐輪場経由",
+  avoid_bus_stops: "バス停回避",
+  avoid_traffic_lights: "信号回避",
+} as const;
+
 export default function MapsScreen() {
   // Use TanStack Query hook for fetching current location
   const { data: currentLocation, isLoading } = useCurrentLocation();
   const mapRef = useRef<MapView>(null);
+  const [modes, setModes] = useState<string[]>([]);
 
   // Determine initial region - use current location if available, otherwise default to Tokyo Tower
   const initialRegion = currentLocation
@@ -47,14 +62,20 @@ export default function MapsScreen() {
     : tokyoTower;
 
   const { data: directions, isLoading: isLoadingDirections } = $api.useQuery(
-    "post",
+    "get",
     "/directions/bicycle",
     {
-      body: {
-        avoidTrafficLights: true,
-        avoidBusStops: true,
-        coordinates: [[0, 10]],
-        viaBikeParking: true,
+      params: {
+        query: {
+          // NOTE: 現在地の緯度経度を使用
+          start: `${currentLocation?.latitude},${currentLocation?.longitude}`,
+          // NOTE: 目的地の緯度経度を使用
+          end: `${tokyoSkytree.latitude},${tokyoSkytree.longitude}`,
+          // NOTE: モード
+          via_bike_parking: modes.includes("via_bike_parking"),
+          avoid_bus_stops: modes.includes("avoid_bus_stops"),
+          avoid_traffic_lights: modes.includes("avoid_traffic_lights"),
+        },
       },
     },
   );
@@ -153,6 +174,22 @@ export default function MapsScreen() {
       )}
 
       <Box className="z-50 absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] p-4 bg-white rounded-lg shadow-lg">
+        {/* NOTE: モード選択 */}
+        <CheckboxGroup value={modes} onChange={setModes}>
+          {Object.entries(MODES).map(([key, label]) => (
+            <Checkbox
+              key={key}
+              value={key}
+              isDisabled={isLoading || isLoadingDirections}
+            >
+              <CheckboxIndicator>
+                <CheckboxIcon as={CheckIcon} />
+              </CheckboxIndicator>
+              <CheckboxLabel>{label}</CheckboxLabel>
+            </Checkbox>
+          ))}
+        </CheckboxGroup>
+
         {/* NOTE: 距離 */}
         <SummaryItem
           label="距離"
