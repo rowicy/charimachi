@@ -16,24 +16,7 @@ import {
 } from "@/components/ui/checkbox";
 import { CheckIcon } from "@/components/ui/icon";
 
-// Sample coordinates for the route
-const tokyoTower = {
-  latitude: 35.6586,
-  longitude: 139.7454,
-  latitudeDelta: 0.05,
-  longitudeDelta: 0.05,
-};
-
-const convenienceStore1 = {
-  latitude: 35.6762,
-  longitude: 139.7654,
-};
-
-const convenienceStore2 = {
-  latitude: 35.6895,
-  longitude: 139.7456,
-};
-
+// TODO: 目的地ダミー
 const tokyoSkytree = {
   latitude: 35.7101,
   longitude: 139.8107,
@@ -46,20 +29,20 @@ const MODES = {
 } as const;
 
 export default function MapsScreen() {
-  // Use TanStack Query hook for fetching current location
   const { data: currentLocation, isLoading } = useCurrentLocation();
   const mapRef = useRef<MapView>(null);
   const [modes, setModes] = useState<string[]>([]);
 
-  // Determine initial region - use current location if available, otherwise default to Tokyo Tower
-  const initialRegion = currentLocation
-    ? {
+  const initialRegion = useMemo(() => {
+    if (currentLocation?.latitude && currentLocation?.longitude) {
+      return {
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
-      }
-    : tokyoTower;
+      };
+    }
+  }, [currentLocation]);
 
   const { data: directions, isLoading: isLoadingDirections } = $api.useQuery(
     "get",
@@ -68,9 +51,9 @@ export default function MapsScreen() {
       params: {
         query: {
           // NOTE: 現在地の緯度経度を使用
-          start: `${currentLocation?.latitude},${currentLocation?.longitude}`,
+          start: `${currentLocation?.longitude},${currentLocation?.latitude}`,
           // NOTE: 目的地の緯度経度を使用
-          end: `${tokyoSkytree.latitude},${tokyoSkytree.longitude}`,
+          end: `${tokyoSkytree.longitude},${tokyoSkytree.latitude}`,
           // NOTE: モード
           via_bike_parking: modes.includes("via_bike_parking"),
           avoid_bus_stops: modes.includes("avoid_bus_stops"),
@@ -78,23 +61,36 @@ export default function MapsScreen() {
         },
       },
     },
+    {
+      enabled: !!currentLocation?.longitude && !!currentLocation?.latitude,
+    },
   );
 
   const routeCoordinates = useMemo(() => {
-    if (currentLocation) {
+    if (currentLocation && directions?.features?.[0]?.geometry?.coordinates) {
+      const coordinates = directions.features[0].geometry.coordinates
+        .map((coord) => ({
+          latitude: coord[1],
+          longitude: coord[0],
+        }))
+        .filter(
+          (coord): coord is { latitude: number; longitude: number } =>
+            typeof coord.latitude === "number" &&
+            typeof coord.longitude === "number" &&
+            !Number.isNaN(coord.latitude) &&
+            !Number.isNaN(coord.longitude),
+        );
+
       return [
         {
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
         },
-        tokyoTower,
-        convenienceStore1,
-        convenienceStore2,
-        tokyoSkytree,
+        ...coordinates,
       ];
     }
-    return [tokyoTower, convenienceStore1, convenienceStore2, tokyoSkytree];
-  }, [currentLocation]);
+    return [];
+  }, [currentLocation, directions?.features]);
 
   useEffect(() => {
     if (currentLocation && mapRef.current) {
@@ -115,7 +111,12 @@ export default function MapsScreen() {
       {isLoading ? (
         <ActivityIndicator />
       ) : (
-        <MapView ref={mapRef} style={styles.map} initialRegion={initialRegion}>
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          // NOTE: 現在地が取得できている場合のみinitialRegionを設定
+          {...(initialRegion && { initialRegion })}
+        >
           {/* OpenStreetMap tile layer */}
           <UrlTile
             urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -136,25 +137,7 @@ export default function MapsScreen() {
             />
           )}
 
-          {/* Markers for each location */}
-          <Marker
-            coordinate={tokyoTower}
-            title="Tokyo Tower"
-            description="Starting point"
-            pinColor="green"
-          />
-          <Marker
-            coordinate={convenienceStore1}
-            title="Convenience Store 1"
-            description="First stop"
-            pinColor="blue"
-          />
-          <Marker
-            coordinate={convenienceStore2}
-            title="Convenience Store 2"
-            description="Second stop"
-            pinColor="blue"
-          />
+          {/* 目的地 */}
           <Marker
             coordinate={tokyoSkytree}
             title="Tokyo Skytree"
@@ -162,20 +145,22 @@ export default function MapsScreen() {
             pinColor="red"
           />
 
-          {/* Route polyline */}
-          <Polyline
-            coordinates={routeCoordinates}
-            strokeColor="#FF6B6B"
-            strokeWidth={3}
-            lineCap="round"
-            lineJoin="round"
-          />
+          {/* 経路 */}
+          {routeCoordinates && (
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeColor="#FF6B6B"
+              strokeWidth={3}
+              lineCap="round"
+              lineJoin="round"
+            />
+          )}
         </MapView>
       )}
 
       <Box className="z-50 absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] p-4 bg-white rounded-lg shadow-lg">
         {/* NOTE: モード選択 */}
-        <CheckboxGroup value={modes} onChange={setModes}>
+        <CheckboxGroup value={modes} onChange={setModes} className="mb-4">
           {Object.entries(MODES).map(([key, label]) => (
             <Checkbox
               key={key}
@@ -194,6 +179,7 @@ export default function MapsScreen() {
         <SummaryItem
           label="距離"
           value={directions?.features?.[0]?.properties?.summary?.distance || 0}
+          unit="m"
           isLoading={isLoadingDirections}
         />
 
@@ -202,6 +188,7 @@ export default function MapsScreen() {
           label="所要時間"
           // TODO: 現在地変更の度に所要時間を再計算する
           value={directions?.features?.[0]?.properties?.summary?.duration || 0}
+          unit="分"
           isLoading={isLoadingDirections}
         />
       </Box>
@@ -219,17 +206,19 @@ const styles = StyleSheet.create({
 function SummaryItem({
   label,
   value,
+  unit,
   isLoading,
 }: {
   label: string;
   value: string | number;
+  unit: string;
   isLoading: boolean;
 }) {
   return (
     <Text className="color-black text-lg flex items-center">
-      {label}:
+      {label}:&nbsp;
       <Text className="color-black flex text-lg items-center px-2">
-        {isLoading ? <Skeleton /> : value}分
+        {isLoading ? <Skeleton /> : value}&nbsp;{unit}
       </Text>
     </Text>
   );
