@@ -298,23 +298,23 @@ func getDirections(c *gin.Context) {
 	}
 
 	//TODO WarningPointsはサンプル
-	if orsResp.WarningPoints == nil {
-		coodinates := orsResp.Features[0].Geometry.Coordinates
-		orsResp.WarningPoints = []WarningPoint{
-			{
-				Type:       "intersection",
-				Name:       "地獄谷",
-				Coordinate: coodinates[1],
-				Message:    "過去に事故が多発した地点です。注意してください。",
-			},
-			{
-				Type:       "straight_road",
-				Name:       "無限道路",
-				Coordinate: coodinates[len(coodinates)-2],
-				Message:    "この道路は直線で、速度を出しやすいです。安全運転を心掛けてください。",
-			},
-		}
-	}
+	// if orsResp.WarningPoints == nil {
+	// 	coodinates := orsResp.Features[0].Geometry.Coordinates
+	// 	orsResp.WarningPoints = []WarningPoint{
+	// 		{
+	// 			Type:       "intersection",
+	// 			Name:       "地獄谷",
+	// 			Coordinate: coodinates[1],
+	// 			Message:    "過去に事故が多発した地点です。注意してください。",
+	// 		},
+	// 		{
+	// 			Type:       "straight_road",
+	// 			Name:       "無限道路",
+	// 			Coordinate: coodinates[len(coodinates)-2],
+	// 			Message:    "この道路は直線で、速度を出しやすいです。安全運転を心掛けてください。",
+	// 		},
+	// 	}
+	// }
 
 	//TODO ComfortScoreはサンプル
 	orsResp.ComfortScore = 85 // 0-100のスコア
