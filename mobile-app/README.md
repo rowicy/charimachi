@@ -4,6 +4,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
+### Makefile
+
+This project includes a Makefile for convenience. You can use the following commands from the root directory:
+
+- `make run_api_dev`: Start the API server in development mode.
+- `make run_mobile_app`: Start the mobile app.
+
+### Manual Setup
+
 1. Install dependencies
 
    ```bash
