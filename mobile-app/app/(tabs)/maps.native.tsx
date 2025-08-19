@@ -92,6 +92,16 @@ export default function MapsScreen() {
     return [];
   }, [currentLocation, directions?.features]);
 
+  const durationMinutes = useMemo(() => {
+    if (directions?.features?.[0]?.properties?.summary?.duration) {
+      return Math.ceil(directions.features[0].properties.summary.duration / 60);
+    }
+
+    return 0;
+  }, [directions]);
+
+
+
   useEffect(() => {
     if (currentLocation && mapRef.current) {
       mapRef.current.animateToRegion(
@@ -178,7 +188,10 @@ export default function MapsScreen() {
         {/* NOTE: 距離 */}
         <SummaryItem
           label="距離"
-          value={directions?.features?.[0]?.properties?.summary?.distance || 0}
+          value={
+            directions?.features?.[0]?.properties?.summary?.distance ||
+            "距離の取得に失敗しました"
+          }
           unit="m"
           isLoading={isLoadingDirections}
         />
@@ -186,8 +199,16 @@ export default function MapsScreen() {
         {/* NOTE: 所要時間 */}
         <SummaryItem
           label="所要時間"
-          // TODO: 現在地変更の度に所要時間を再計算する
-          value={directions?.features?.[0]?.properties?.summary?.duration || 0}
+          value={durationMinutes}
+          unit="分"
+          isLoading={isLoadingDirections}
+        />
+
+        {/* NOTE: 残り時間 */}
+        <SummaryItem
+          label="残り時間"
+          // TODO: 残り時間を算出
+          value={durationMinutes}
           unit="分"
           isLoading={isLoadingDirections}
         />
