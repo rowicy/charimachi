@@ -100,8 +100,6 @@ export default function MapsScreen() {
     return 0;
   }, [directions]);
 
-
-
   useEffect(() => {
     if (currentLocation && mapRef.current) {
       mapRef.current.animateToRegion(
