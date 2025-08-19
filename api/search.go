@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 	_ "template-mobile-app-api/docs"
 
@@ -10,6 +12,20 @@ import (
 type SearchResponse struct {
 	// https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
 	// のレスポンスを構造体に
+	PlaceID     int      `json:"place_id"`     // Nominatim 内での一意なID
+	Licence     string   `json:"licence"`      // データのライセンス情報
+	OsmType     string   `json:"osm_type"`     // OSM 要素の種類 (node, way, relation)
+	OsmID       int64    `json:"osm_id"`       // OSM 内の要素ID
+	Lat         string   `json:"lat"`          // 緯度
+	Lon         string   `json:"lon"`          // 経度
+	Class       string   `json:"class"`        // 分類（例: railway, building, amenity など）
+	Type        string   `json:"type"`         // 分類のサブタイプ（例: stop, station, bus_station など）
+	PlaceRank   int      `json:"place_rank"`   // 検索結果の粒度を示すランク
+	Importance  float64  `json:"importance"`   // 検索結果の重要度スコア
+	AddressType string   `json:"addresstype"`  // アドレスの種類（例: city, house, railway）
+	Name        string   `json:"name"`         // OSM に登録されている名前
+	DisplayName string   `json:"display_name"` // 住所や施設名などの連結
+	BoundingBox []string `json:"boundingbox"`  // 範囲 [南緯, 北緯, 西経, 東経]
 }
 
 //TODO 定義中
@@ -30,7 +46,40 @@ func getSearch(c *gin.Context) {
 	//Client inputを取得 パラメータ: q
 	//https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
+	query := c.Query("q")
+	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + query + "&format=json&limit=2")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error:   "Failed to fetch data",
+			Message: err.Error(),
+		})
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error:   "Failed to read response",
+			Message: err.Error(),
+		})
+		return
+	}
+
 	var searchResponse []SearchResponse
+	if err := json.Unmarshal(body, &searchResponse); err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error:   "Failed to parse response",
+			Message: err.Error(),
+		})
+
+		return
+	}
+
+	// decoder := json.NewDecoder(resp.Body)
+	// if err := decoder.Decode(&searchResponse); err != nil {
+	// 	panic(err)
+	// }
 
 	c.JSON(http.StatusOK, searchResponse)
 }

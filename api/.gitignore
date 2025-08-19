@@ -39,3 +39,5 @@ main
 
 # generated files
 docs
+
+.env
