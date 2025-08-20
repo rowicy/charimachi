@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	_ "template-mobile-app-api/docs"
 
 	"github.com/gin-gonic/gin"
@@ -44,10 +45,11 @@ type SearchResponse struct {
 // @Router /search [get]
 func getSearch(c *gin.Context) {
 	//Client inputを取得 パラメータ: q
-	//https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
+	//https://nominatim.openstreetmap.org/search?q={Client input}&accept-language=ja&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
 	query := c.Query("q")
-	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + query + "&format=json&limit=5")
+	encodedQuery := url.QueryEscape(query)
+	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + encodedQuery + "&accept-language=ja&format=json&limit=5")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Error:   "Failed to fetch data",
