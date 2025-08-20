@@ -1,36 +1,29 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 // @ts-ignore - react-native-maps has TypeScript compatibility issues with strict mode
 import MapView, { UrlTile, Marker, Polyline } from "react-native-maps";
 import { useCurrentLocation } from "@/hooks/use-location";
 import { $api } from "@/api-client/api";
-import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import Skeleton from "@/components/skeleton";
-import {
-  Checkbox,
-  CheckboxGroup,
-  CheckboxIcon,
-  CheckboxIndicator,
-  CheckboxLabel,
-} from "@/components/ui/checkbox";
-import { CheckIcon } from "@/components/ui/icon";
-
-// TODO: 目的地ダミー
-const tokyoSkytree = {
-  latitude: 35.7101,
-  longitude: 139.8107,
-};
-
-const MODES = {
-  via_bike_parking: "自転車駐輪場経由",
-  avoid_bus_stops: "バス停回避",
-  avoid_traffic_lights: "信号回避",
-} as const;
+import type { components } from "@/schema/api";
+import Search from "@/components/search";
+import Mode from "@/components/mode";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
   const mapRef = useRef<MapView>(null);
+  const [openSearch, setOpenSearch] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
+  const [destination, setDestination] = useState<
+    components["schemas"]["main.SearchResponse"] | null
+  >(null);
   const [modes, setModes] = useState<string[]>([]);
 
   const initialRegion = useMemo(() => {
@@ -44,7 +37,43 @@ export default function MapsScreen() {
     }
   }, [currentLocation]);
 
-  const { data: directions, isLoading: isLoadingDirections } = $api.useQuery(
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedKeyword(keyword);
+      setOpenSearch(!!keyword && keyword.length > 0);
+    }, 1000);
+    return () => clearTimeout(handler);
+  }, [keyword]);
+
+  const { data: destinations, isLoading: isLoadingDestinations } =
+    $api.useQuery(
+      "get",
+      "/search",
+      {
+        params: {
+          query: {
+            q: debouncedKeyword,
+          },
+        },
+      },
+      {
+        enabled: !!debouncedKeyword && debouncedKeyword.length > 0,
+      },
+    );
+
+  const handleDestinationSelect = useCallback(
+    (destination: components["schemas"]["main.SearchResponse"]) => {
+      setDestination(destination);
+      setOpenSearch(false);
+    },
+    [],
+  );
+
+  const {
+    data: directions,
+    isLoading: isLoadingDirections,
+    isError: isErrorDirections,
+  } = $api.useQuery(
     "get",
     "/directions/bicycle",
     {
@@ -53,7 +82,7 @@ export default function MapsScreen() {
           // NOTE: 現在地の緯度経度を使用
           start: `${currentLocation?.longitude},${currentLocation?.latitude}`,
           // NOTE: 目的地の緯度経度を使用
-          end: `${tokyoSkytree.longitude},${tokyoSkytree.latitude}`,
+          end: `${destination?.lon},${destination?.lat}`,
           // NOTE: モード
           via_bike_parking: modes.includes("via_bike_parking"),
           avoid_bus_stops: modes.includes("avoid_bus_stops"),
@@ -115,103 +144,87 @@ export default function MapsScreen() {
   }, [currentLocation]);
 
   return (
-    <View className="flex-1 min-h-full flex items-center justify-center relative">
+    <Box className="flex-1 min-h-full flex items-center justify-center relative">
       {isLoading ? (
         <ActivityIndicator />
       ) : (
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          // NOTE: 現在地が取得できている場合のみinitialRegionを設定
-          {...(initialRegion && { initialRegion })}
-        >
-          {/* OpenStreetMap tile layer */}
-          <UrlTile
-            urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maximumZ={19}
-            minimumZ={1}
+        <>
+          {/* NOTE: 目的地検索 */}
+          <Search
+            keyword={keyword}
+            setKeyword={setKeyword}
+            open={openSearch}
+            loading={isLoadingDestinations}
+            destinations={destinations}
+            onSelect={handleDestinationSelect}
           />
 
-          {/* Current location marker - only show if location is available */}
-          {currentLocation && (
-            <Marker
-              coordinate={{
-                latitude: currentLocation.latitude,
-                longitude: currentLocation.longitude,
-              }}
-              title="現在地"
-              description="Your current location"
-              pinColor="orange"
+          <MapView
+            ref={mapRef}
+            style={styles.map}
+            // NOTE: 現在地が取得できている場合のみinitialRegionを設定
+            {...(initialRegion && { initialRegion })}
+          >
+            {/* OpenStreetMap tile layer */}
+            <UrlTile
+              urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+              maximumZ={19}
+              minimumZ={1}
             />
-          )}
 
-          {/* 目的地 */}
-          <Marker
-            coordinate={tokyoSkytree}
-            title="Tokyo Skytree"
-            description="Final destination"
-            pinColor="red"
+            {/* Current location marker - only show if location is available */}
+            {currentLocation && (
+              <Marker
+                coordinate={{
+                  latitude: currentLocation.latitude,
+                  longitude: currentLocation.longitude,
+                }}
+                title="現在地"
+                description="Your current location"
+                pinColor="orange"
+              />
+            )}
+
+            {/* 目的地 */}
+            {destination?.display_name &&
+              destination?.lat &&
+              destination?.lon && (
+                <Marker
+                  coordinate={{
+                    latitude: Number(destination?.lat),
+                    longitude: Number(destination?.lon),
+                  }}
+                  title={destination?.display_name}
+                  description="目的地"
+                  pinColor="red"
+                />
+              )}
+
+            {/* 経路 */}
+            {routeCoordinates && (
+              <Polyline
+                coordinates={routeCoordinates}
+                strokeColor="#FF6B6B"
+                strokeWidth={3}
+                lineCap="round"
+                lineJoin="round"
+              />
+            )}
+          </MapView>
+
+          {/* NOTE: モード選択 */}
+          <Mode
+            loading={isLoading || isLoadingDirections}
+            distance={directions?.features?.[0]?.properties?.summary?.distance}
+            duration={durationMinutes}
+            modes={modes}
+            setModes={setModes}
+            error={!!destination && isErrorDirections}
+            destination={!!destination}
           />
-
-          {/* 経路 */}
-          {routeCoordinates && (
-            <Polyline
-              coordinates={routeCoordinates}
-              strokeColor="#FF6B6B"
-              strokeWidth={3}
-              lineCap="round"
-              lineJoin="round"
-            />
-          )}
-        </MapView>
+        </>
       )}
-
-      <Box className="z-50 absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] p-4 bg-white rounded-lg shadow-lg">
-        {/* NOTE: モード選択 */}
-        <CheckboxGroup value={modes} onChange={setModes} className="mb-4">
-          {Object.entries(MODES).map(([key, label]) => (
-            <Checkbox
-              key={key}
-              value={key}
-              isDisabled={isLoading || isLoadingDirections}
-            >
-              <CheckboxIndicator>
-                <CheckboxIcon as={CheckIcon} />
-              </CheckboxIndicator>
-              <CheckboxLabel>{label}</CheckboxLabel>
-            </Checkbox>
-          ))}
-        </CheckboxGroup>
-
-        {/* NOTE: 距離 */}
-        <SummaryItem
-          label="距離"
-          value={
-            directions?.features?.[0]?.properties?.summary?.distance ||
-            "距離の取得に失敗しました"
-          }
-          unit="m"
-          isLoading={isLoadingDirections}
-        />
-
-        {/* NOTE: 所要時間 */}
-        <SummaryItem
-          label="所要時間"
-          value={durationMinutes}
-          unit="分"
-          isLoading={isLoadingDirections}
-        />
-
-        {/* NOTE: 残り時間 */}
-        <SummaryItem
-          label="残り時間"
-          // TODO: 残り時間を算出
-          value={durationMinutes}
-          unit="分"
-          isLoading={isLoadingDirections}
-        />
-      </Box>
-    </View>
+    </Box>
   );
 }
 
@@ -221,24 +234,3 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
   },
 });
-
-function SummaryItem({
-  label,
-  value,
-  unit,
-  isLoading,
-}: {
-  label: string;
-  value: string | number;
-  unit: string;
-  isLoading: boolean;
-}) {
-  return (
-    <Text className="color-black text-lg flex items-center">
-      {label}:&nbsp;
-      <Text className="color-black flex text-lg items-center px-2">
-        {isLoading ? <Skeleton /> : value}&nbsp;{unit}
-      </Text>
-    </Text>
-  );
-}
