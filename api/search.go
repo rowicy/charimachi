@@ -37,7 +37,7 @@ type SearchResponse struct {
 // @Accept json
 // @Produce json
 // @Param q query string true "検索文字列"
-// @Success 200 {object} SearchResponse
+// @Success 200 {object} []SearchResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
@@ -47,7 +47,7 @@ func getSearch(c *gin.Context) {
 	//https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
 	query := c.Query("q")
-	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + query + "&format=json&limit=2")
+	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + query + "&format=json&limit=5")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Error:   "Failed to fetch data",
