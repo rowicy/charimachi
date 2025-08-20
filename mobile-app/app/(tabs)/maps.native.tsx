@@ -10,27 +10,10 @@ import { StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 import MapView, { UrlTile, Marker, Polyline } from "react-native-maps";
 import { useCurrentLocation } from "@/hooks/use-location";
 import { $api } from "@/api-client/api";
-import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import Skeleton from "@/components/skeleton";
-import {
-  Checkbox,
-  CheckboxGroup,
-  CheckboxIcon,
-  CheckboxIndicator,
-  CheckboxLabel,
-} from "@/components/ui/checkbox";
-import { CheckIcon, SearchIcon } from "@/components/ui/icon";
-import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
-import { FormControl } from "@/components/ui/form-control";
 import type { components } from "@/schema/api";
-import { Button } from "@/components/ui/button";
-
-const MODES = {
-  via_bike_parking: "自転車駐輪場経由",
-  avoid_bus_stops: "バス停回避",
-  avoid_traffic_lights: "信号回避",
-} as const;
+import Search from "@/components/search";
+import Mode from "@/components/mode";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
@@ -58,7 +41,7 @@ export default function MapsScreen() {
     const handler = setTimeout(() => {
       setDebouncedKeyword(keyword);
       setOpenSearch(!!keyword && keyword.length > 0);
-    }, 2000);
+    }, 1000);
     return () => clearTimeout(handler);
   }, [keyword]);
 
@@ -86,7 +69,11 @@ export default function MapsScreen() {
     [],
   );
 
-  const { data: directions, isLoading: isLoadingDirections } = $api.useQuery(
+  const {
+    data: directions,
+    isLoading: isLoadingDirections,
+    isError: isErrorDirections,
+  } = $api.useQuery(
     "get",
     "/directions/bicycle",
     {
@@ -163,62 +150,14 @@ export default function MapsScreen() {
       ) : (
         <>
           {/* NOTE: 目的地検索 */}
-          <Box className="absolute top-16 left-1/2 -translate-x-1/2 w-[90vw] shadow-lg z-50">
-            {/* NOTE: 入力欄 */}
-            <FormControl>
-              <Input className="bg-white outline-none border-white">
-                <InputSlot className="pl-3">
-                  <InputIcon as={SearchIcon} />
-                </InputSlot>
-                <InputField
-                  placeholder="目的地を入力"
-                  onChangeText={(text) => setKeyword(text)}
-                  value={keyword}
-                  className="text-black"
-                />
-              </Input>
-            </FormControl>
-
-            {/* NOTE: サジェスト */}
-            {openSearch && (
-              <Box className="bg-white rounded-b-lg shadow-lg mt-1">
-                {isLoadingDestinations ? (
-                  // skeletonループで3つ表示
-                  <>
-                    {Array.from({ length: 3 }, (_, index) => (
-                      <Box
-                        className="py-2 px-4 [&:not(:first-child)]:border-b border-gray-200"
-                        key={index}
-                      >
-                        <Skeleton width={200} height={20} />
-                      </Box>
-                    ))}
-                  </>
-                ) : Array.isArray(destinations) && destinations.length > 0 ? (
-                  destinations.map((destination) => {
-                    if (!destination.display_name) return;
-
-                    return (
-                      <Button
-                        key={destination.place_id}
-                        className="p-2 px-4 [&:not(:first-child)]:border-b border-gray-200 h-auto justify-start"
-                        variant="link"
-                        onPress={() => handleDestinationSelect(destination)}
-                      >
-                        <Text className="text-black">
-                          {destination.display_name}
-                        </Text>
-                      </Button>
-                    );
-                  })
-                ) : (
-                  <Text className="p-2 text-black border-gray-200">
-                    見つかりませんでした。
-                  </Text>
-                )}
-              </Box>
-            )}
-          </Box>
+          <Search
+            keyword={keyword}
+            setKeyword={setKeyword}
+            open={openSearch}
+            loading={isLoadingDestinations}
+            destinations={destinations}
+            onSelect={handleDestinationSelect}
+          />
 
           <MapView
             ref={mapRef}
@@ -273,52 +212,16 @@ export default function MapsScreen() {
             )}
           </MapView>
 
-          <Box className="z-50 absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] p-4 bg-white rounded-lg shadow-lg">
-            {/* NOTE: モード選択 */}
-            <CheckboxGroup value={modes} onChange={setModes} className="mb-4">
-              {Object.entries(MODES).map(([key, label]) => (
-                <Checkbox
-                  key={key}
-                  value={key}
-                  isDisabled={isLoading || isLoadingDirections}
-                  className="bg-transparent"
-                >
-                  <CheckboxIndicator>
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  {/* 強制的にテキスト色を黒に固定 */}
-                  <CheckboxLabel style={{ color: "#000" }}>
-                    {label}
-                  </CheckboxLabel>
-                </Checkbox>
-              ))}
-            </CheckboxGroup>
-
-            {/* NOTE: 距離 */}
-            <SummaryItem
-              label="距離"
-              value={directions?.features?.[0]?.properties?.summary?.distance}
-              unit="m"
-              isLoading={isLoadingDirections}
-            />
-
-            {/* NOTE: 所要時間 */}
-            <SummaryItem
-              label="所要時間"
-              value={durationMinutes}
-              unit="分"
-              isLoading={isLoadingDirections}
-            />
-
-            {/* NOTE: 残り時間 */}
-            <SummaryItem
-              label="残り時間"
-              // TODO: 残り時間を算出
-              value={durationMinutes}
-              unit="分"
-              isLoading={isLoadingDirections}
-            />
-          </Box>
+          {/* NOTE: モード選択 */}
+          <Mode
+            loading={isLoading || isLoadingDirections}
+            distance={directions?.features?.[0]?.properties?.summary?.distance}
+            duration={durationMinutes}
+            modes={modes}
+            setModes={setModes}
+            error={!!destination && isErrorDirections}
+            destination={!!destination}
+          />
         </>
       )}
     </Box>
@@ -331,30 +234,3 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
   },
 });
-
-function SummaryItem({
-  label,
-  value,
-  unit,
-  isLoading,
-}: {
-  label: string;
-  value?: string | number;
-  unit: string;
-  isLoading: boolean;
-}) {
-  return (
-    <Text className="color-black text-lg flex items-center">
-      {label}:&nbsp;
-      <Text className="color-black flex text-lg items-center px-2">
-        {isLoading ? (
-          <Skeleton />
-        ) : value ? (
-          `${value} ${unit}`
-        ) : (
-          "取得に失敗しました"
-        )}
-      </Text>
-    </Text>
-  );
-}
