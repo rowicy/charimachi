@@ -20,9 +20,13 @@ export default function SummaryItem({
     <Text className="color-black text-lg flex items-center">
       {label}:&nbsp;
       <Text className="color-black flex text-lg items-center px-2">
-        {loading && <Skeleton />}
-        {value && `${value} ${unit}`}
-        {error && "取得に失敗しました"}
+        {loading ? (
+          <Skeleton />
+        ) : error ? (
+          "取得に失敗しました"
+        ) : (
+          value && `${value} ${unit}`
+        )}
       </Text>
     </Text>
   );
