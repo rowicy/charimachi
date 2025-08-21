@@ -14,6 +14,8 @@ import { Box } from "@/components/ui/box";
 import type { components } from "@/schema/api";
 import Search from "@/components/search";
 import Mode from "@/components/mode";
+import { Text } from "@/components/ui/text";
+import { Link, LinkText } from "@/components/ui/link";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
@@ -212,16 +214,27 @@ export default function MapsScreen() {
             )}
           </MapView>
 
-          {/* NOTE: モード選択 */}
-          <Mode
-            loading={isLoading || isLoadingDirections}
-            distance={directions?.features?.[0]?.properties?.summary?.distance}
-            duration={durationMinutes}
-            modes={modes}
-            setModes={setModes}
-            error={!!destination && isErrorDirections}
-            destination={!!destination}
-          />
+          <Box className="absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] flex items-end flex-col">
+            {/* NOTE: モード選択 */}
+            <Mode
+              loading={isLoading || isLoadingDirections}
+              distance={
+                directions?.features?.[0]?.properties?.summary?.distance
+              }
+              duration={durationMinutes}
+              modes={modes}
+              setModes={setModes}
+              error={!!destination && isErrorDirections}
+              destination={!!destination}
+            />
+
+            <Box className="flex flex-row items-center justify-center p-1 text-gray-500 bg-white text-center mt-4">
+              <Text className="text-sm">&copy;&nbsp;</Text>
+              <Link href="https://www.openstreetmap.org/copyright">
+                <LinkText size="sm">OpenStreetMap contributors</LinkText>
+              </Link>
+            </Box>
+          </Box>
         </>
       )}
     </Box>
