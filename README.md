@@ -41,7 +41,7 @@
     - 取締強化交差点注意(オープンデータ)
     - 事故が多い地点(今回実装を見送る可能性あり)
 - 経由地点表示
-- 動時間表示
+- 所要時間表示
 - about画面・制作元・出典
 - (駐輪所経由モード)
 - (バス停回避モード)
@@ -109,10 +109,6 @@ participant OSM as OpenStreetMap
 ```
 
 ---
-
-## template-mobile-app
-
-Templates for mobile app development.
 
 ### [mobile-app](./mobile-app)
 
