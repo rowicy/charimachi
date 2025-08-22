@@ -30,7 +30,7 @@ export default function Mode({
   destination,
 }: Props) {
   return (
-    <Box className="z-50 p-4 bg-white rounded-lg shadow-lg w-full">
+    <Box className="z-50 p-4 bg-white/80 rounded-lg shadow-lg w-full">
       {/* NOTE: モード選択 */}
       <CheckboxGroup value={modes} onChange={setModes}>
         {Object.entries(MODES).map(([key, label]) => (

@@ -145,6 +145,38 @@ export default function MapsScreen() {
     }
   }, [currentLocation]);
 
+  // NOTE: 目的地が設定されたら拡大位置をbbox基準に変更
+  useEffect(() => {
+    if (destination && currentLocation && mapRef.current) {
+      const destLat = Number(destination.lat);
+      const destLon = Number(destination.lon);
+      const currLat = currentLocation.latitude;
+      const currLon = currentLocation.longitude;
+
+      // 両点を含む範囲を計算
+      const minLat = Math.min(destLat, currLat);
+      const maxLat = Math.max(destLat, currLat);
+      const minLon = Math.min(destLon, currLon);
+      const maxLon = Math.max(destLon, currLon);
+
+      // 中心点とデルタを計算
+      const centerLat = (minLat + maxLat) / 2;
+      const centerLon = (minLon + maxLon) / 2;
+      const latDelta = Math.max((maxLat - minLat) * 1.5, 0.005);
+      const lonDelta = Math.max((maxLon - minLon) * 1.5, 0.005);
+
+      mapRef.current.animateToRegion(
+        {
+          latitude: centerLat,
+          longitude: centerLon,
+          latitudeDelta: latDelta,
+          longitudeDelta: lonDelta,
+        },
+        1000,
+      );
+    }
+  }, [destination, currentLocation]);
+
   return (
     <Box className="flex-1 min-h-full flex items-center justify-center relative">
       {isLoading ? (
@@ -214,7 +246,7 @@ export default function MapsScreen() {
             )}
           </MapView>
 
-          <Box className="absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] flex items-end flex-col">
+          <Box className="absolute bottom-28 left-1/2 -translate-x-1/2 w-[90vw] flex items-end flex-col">
             {/* NOTE: モード選択 */}
             <Mode
               loading={isLoading || isLoadingDirections}
@@ -228,7 +260,7 @@ export default function MapsScreen() {
               destination={!!destination}
             />
 
-            <Box className="flex flex-row items-center justify-center p-1 text-gray-500 bg-white text-center mt-4">
+            <Box className="flex flex-row items-center justify-center p-1 text-gray-500 bg-white/80 text-center mt-1">
               <Text className="text-sm">&copy;&nbsp;</Text>
               <Link href="https://www.openstreetmap.org/copyright">
                 <LinkText size="sm">OpenStreetMap contributors</LinkText>
