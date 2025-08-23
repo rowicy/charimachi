@@ -45,8 +45,13 @@ export default function Score({ score }: Props) {
           backgroundColor: status.color,
         }}
       >
-        <ButtonText className="text-md text-white">快適度</ButtonText>
-        <ButtonText className="text-3xl font-semibold leading-none -my-1 text-white">
+        <ButtonText className="text-md " style={{ color: status.textColor }}>
+          快適度
+        </ButtonText>
+        <ButtonText
+          className="text-3xl font-semibold leading-none -my-1 "
+          style={{ color: status.textColor }}
+        >
           {score}
         </ButtonText>
       </Button>
