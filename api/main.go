@@ -58,6 +58,8 @@ func main() {
 		v1.GET("/search", getSearch)
 	}
 
+	//CashWorningIntersection()
+
 	// Start server on port 8080
 	r.Run(":8080")
 }
