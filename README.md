@@ -98,6 +98,8 @@ flowchart LR
 
 
     GoServer <--元ルートデータ--> OpenRouteService
+
+    GoServer <--オープンデータ加工--> OpenData
     
 
     ClientApp[クライアントアプリ（Expo）]　--描画--> OSM[OpenStreetMap]
