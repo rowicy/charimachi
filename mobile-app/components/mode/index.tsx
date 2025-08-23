@@ -60,8 +60,7 @@ export default function Mode({ loading, modes, setModes }: Props) {
                 <CheckboxIndicator>
                   <CheckboxIcon as={CheckIcon} />
                 </CheckboxIndicator>
-                {/* 強制的にテキスト色を黒に固定 */}
-                <CheckboxLabel style={{ color: "#000" }}>{label}</CheckboxLabel>
+                <CheckboxLabel>{label}</CheckboxLabel>
               </Checkbox>
             ))}
           </CheckboxGroup>

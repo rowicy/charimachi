@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 // @ts-ignore - react-native-maps has TypeScript compatibility issues with strict mode
-import MapView, { UrlTile, Marker, Polyline } from "react-native-maps";
+import MapView, { UrlTile, Polyline } from "react-native-maps";
 import { useCurrentLocation } from "@/hooks/use-location";
 import { $api } from "@/api-client/api";
 import { Box } from "@/components/ui/box";
@@ -18,6 +18,7 @@ import { Link, LinkText } from "@/components/ui/link";
 import Score from "@/components/score";
 import Result from "@/components/result";
 import Mode from "@/components/mode";
+import Marker from "@/components/marker";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
@@ -241,14 +242,14 @@ export default function MapsScreen() {
             // NOTE: 現在地が取得できている場合のみinitialRegionを設定
             {...(initialRegion && { initialRegion })}
           >
-            {/* OpenStreetMap tile layer */}
+            {/* NOTE: OpenStreetMap tile */}
             <UrlTile
               urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
               maximumZ={19}
               minimumZ={1}
             />
 
-            {/* Current location marker - only show if location is available */}
+            {/* NOTE: 現在地 */}
             {currentLocation && (
               <Marker
                 coordinate={{
@@ -257,11 +258,11 @@ export default function MapsScreen() {
                 }}
                 title="現在地"
                 description="Your current location"
-                pinColor="orange"
+                type="START"
               />
             )}
 
-            {/* 目的地 */}
+            {/* NOTE: 目的地 */}
             {destination?.display_name &&
               destination?.lat &&
               destination?.lon && (
@@ -272,11 +273,11 @@ export default function MapsScreen() {
                   }}
                   title={destination?.display_name}
                   description="目的地"
-                  pinColor="red"
+                  type="GOAL"
                 />
               )}
 
-            {/* 経路 */}
+            {/* NOTE: 経路 */}
             {routeCoordinates && (
               <Polyline
                 coordinates={routeCoordinates}
@@ -286,6 +287,28 @@ export default function MapsScreen() {
                 lineJoin="round"
               />
             )}
+            {/* NOTE: 注位置点にマーカーを表示 */}
+            {directions?.warning_points?.map((point) => {
+              if (
+                !point.coordinate ||
+                !point.coordinate?.[0] ||
+                !point.coordinate?.[1]
+              )
+                return null;
+
+              return (
+                <Marker
+                  key={point.name}
+                  coordinate={{
+                    latitude: point.coordinate?.[1],
+                    longitude: point.coordinate?.[0],
+                  }}
+                  title={point.name}
+                  description={point.message}
+                  type="WARNING"
+                />
+              );
+            })}
           </MapView>
 
           {/* NOTE: スコア */}
