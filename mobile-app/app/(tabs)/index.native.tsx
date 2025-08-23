@@ -310,7 +310,7 @@ export default function MapsScreen() {
                         longitude: item.coordinate?.[0],
                       }}
                       title={item.message}
-                      description={item.message}
+                      description={`この場所での令和6年11月の「違反件数: ${item.violation_count}件」「違反率: ${(item.violation_rate ?? 0) * 100}%」`}
                       type="VIOLATION"
                       count={item.violation_count}
                       rate={item.violation_rate}
