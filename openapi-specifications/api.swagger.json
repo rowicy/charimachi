@@ -222,6 +222,13 @@
                             "$ref": "#/components/schemas/main.ORSFeature"
                         }
                     },
+                    "intersection_violation_rate": {
+                        "description": "XXX 追加項目",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/main.Intersection_Violation_Rate"
+                        }
+                    },
                     "metadata": {
                         "description": "Metadata",
                         "allOf": [
@@ -253,6 +260,23 @@
                     "message": {
                         "type": "string",
                         "example": "Failed to fetch data"
+                    }
+                }
+            },
+            "main.Intersection_Violation_Rate": {
+                "type": "object",
+                "properties": {
+                    "coordinate": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "intersection": {
+                        "type": "string"
+                    },
+                    "rate_score": {
+                        "type": "number"
                     }
                 }
             },
