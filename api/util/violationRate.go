@@ -92,7 +92,7 @@ func FilterViolationRates(geometry ORSGeometry, violations []ViolationRate) []Vi
 				var title string
 				if v.ViolationRate < 0.3 { // 低リスク
 					title = "注意 交差点"
-				} else if v.ViolationRate < 0.6 { // 中リスク
+				} else if v.ViolationRate < 0.8 { // 中リスク
 					title = "警告 交差点"
 				} else { // 高リスク
 					title = "違反多発 交差点"
