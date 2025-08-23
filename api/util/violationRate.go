@@ -13,6 +13,7 @@ import (
 
 type ViolationRate struct {
 	Type           string    `json:"type,omitempty"`
+	Name           string    `json:"name,omitempty"`
 	ViolationRate  float64   `json:"violation_rate"`            //違反率スコア
 	ViolationCount int       `json:"violation_count,omitempty"` //違反件数
 	Coordinate     []float64 `json:"coordinate"`
@@ -88,9 +89,18 @@ func FilterViolationRates(geometry ORSGeometry, violations []ViolationRate) []Vi
 	for _, v := range violations {
 		for _, c := range geometry.Coordinates {
 			if distance(v.Coordinate, c) < threshold {
+				var title string
+				if v.ViolationRate < 0.3 { // 低リスク
+					title = "注意 交差点"
+				} else if v.ViolationRate < 0.6 { // 中リスク
+					title = "警告 交差点"
+				} else { // 高リスク
+					title = "違反多発 交差点"
+				}
 				rand.Seed(time.Now().UnixNano())
 				violationRate := ViolationRate{
 					Type:           "intersection",
+					Name:           title,
 					ViolationRate:  math.Floor(v.ViolationRate*100) / 100, // 小数点以下2桁に丸める
 					ViolationCount: v.ViolationCount,
 					Coordinate:     c,
