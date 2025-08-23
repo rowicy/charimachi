@@ -9,9 +9,9 @@ type ViolationRate struct {
 }
 
 // GetViolationRates godoc
-// @Summary Get violation rates
-// @Description Returns violation rates for specific coordinates. If session_id is not provided, returns nil.
-// @Param session_id query string false "Session ID" example(session_id=53238c22-12ac-8ff8-fcdd-738d30a780df)
+// @Summary 違反箇所の交差点
+// @Description /directions/bicycleでの経路検索結果に対する違反箇所の交差点を返す
+// @Param session_id query string false "/directions/bicycleのレスポンス内のsession_id" example(session_id=53238c22-12ac-8ff8-fcdd-738d30a780df)
 // @Tags get
 // @Accept json
 // @Produce json
