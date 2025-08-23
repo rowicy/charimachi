@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	_ "template-mobile-app-api/docs"
 
 	"github.com/gin-gonic/gin"
@@ -37,14 +38,14 @@ type SearchResponse struct {
 // @Accept json
 // @Produce json
 // @Param q query string true "検索文字列"
-// @Success 200 {object} SearchResponse
+// @Success 200 {object} []SearchResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /search [get]
 func getSearch(c *gin.Context) {
 	//Client inputを取得 パラメータ: q
-	//https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
+	//https://nominatim.openstreetmap.org/search?q={Client input}&accept-language=ja&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
 	query := c.Query("q")
 
@@ -55,44 +56,15 @@ func getSearch(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusInternalServerError, resp)
 	}
-
-	// resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + query + "&format=json&limit=2")
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, ErrorResponse{
-	// 		Error:   "Failed to fetch data",
-	// 		Message: err.Error(),
-	// 	})
-	// 	return
-	// }
-	// defer resp.Body.Close()
-
-	// body, err := io.ReadAll(resp.Body)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, ErrorResponse{
-	// 		Error:   "Failed to read response",
-	// 		Message: err.Error(),
-	// 	})
-	// 	return
-	// }
-
-	// var searchResponse []SearchResponse
-	// if err := json.Unmarshal(body, &searchResponse); err != nil {
-	// 	c.JSON(http.StatusInternalServerError, ErrorResponse{
-	// 		Error:   "Failed to parse response",
-	// 		Message: err.Error(),
-	// 	})
-
-	// 	return
-	// }
-
-	// c.JSON(http.StatusOK, searchResponse)
 }
 
 func getSearchBase(query string) (res any) {
 	//Client inputを取得 パラメータ: q
 	//https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
-	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + query + "&format=json&limit=2")
+	encodedQuery := url.QueryEscape(query)
+	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + encodedQuery + "&accept-language=ja&format=json&limit=5")
+
 	if err != nil {
 		response := ErrorResponse{
 			Error:   "Failed to fetch data",

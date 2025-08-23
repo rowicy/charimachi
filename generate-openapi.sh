@@ -82,12 +82,17 @@ if [ ! -f "mobile-app/schema/api.d.ts" ]; then
 fi
 echo "✅ TypeScript definitions generated at mobile-app/schema/api.d.ts"
 
-# Test mock command (start and immediately stop)
+# Test mock command
 echo "Testing npm run mock..."
 cd mobile-app
-( npm run mock & pid=$!; sleep 5; kill -0 $pid 2>/dev/null && kill -9 $pid ) || true
+( npm run mock & sleep 5; ) || true
 cd ..
 echo "✅ Mock server test passed"
+
+# Stop the mock server
+echo "Stopping mock server..."
+kill -9 $(lsof -t -i :8080) 2>/dev/null || true
+echo "✅ Mock server stopped"
 
 echo ""
 echo "🎉 All steps completed successfully!"
