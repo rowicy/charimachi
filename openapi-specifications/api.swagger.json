@@ -194,15 +194,15 @@
         },
         "/violation_rates": {
             "get": {
-                "description": "Returns violation rates for specific coordinates. If session_id is not provided, returns nil.",
+                "description": "/directions/bicycleでの経路検索結果に対する違反箇所の交差点を返す",
                 "tags": [
-                    "get"
+                    "map"
                 ],
-                "summary": "Get violation rates",
+                "summary": "違反箇所の交差点",
                 "parameters": [
                     {
                         "example": "session_id=53238c22-12ac-8ff8-fcdd-738d30a780df",
-                        "description": "Session ID",
+                        "description": "/directions/bicycleのレスポンス内のsession_id",
                         "name": "session_id",
                         "in": "query",
                         "schema": {
@@ -555,7 +555,15 @@
                     "message": {
                         "type": "string"
                     },
+                    "type": {
+                        "type": "string"
+                    },
+                    "violation_count": {
+                        "description": "違反件数",
+                        "type": "integer"
+                    },
                     "violation_rate": {
+                        "description": "違反率スコア",
                         "type": "number"
                     }
                 }
