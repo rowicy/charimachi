@@ -59,7 +59,7 @@ func main() {
 		// 目的地検索
 		v1.GET("/search", util.GetSearch)
 		//注意点
-		v1.GET("/warningPoint", util.GetWarningPoints)
+		v1.GET("/warning_point", util.GetWarningPoints)
 		//違反率
 		v1.GET("/violation_rates", util.GetViolationRates)
 	}

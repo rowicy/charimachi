@@ -1,6 +1,6 @@
 # ChariMachi
 
-<img src="./img/icon.png" alt="icon" width="200" />
+<img src="./mobile-app/assets/images/icon.png" alt="icon" width="200" />
 
 ## 概要
 

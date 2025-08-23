@@ -16,6 +16,14 @@ type WarningPoint struct {
 
 var WorningIntersectionPoints []WarningPoint
 
+// GetWarningPoints godoc
+// @Summary 注意点取得
+// @Description 取締強化交差点などの注意点をまとめて返す。
+// @Tags map
+// @Accept json
+// @Produce json
+// @Success 200 {object} []WarningPoint "注意地点情報"
+// @Router /warning_point [get]
 func GetWarningPoints(c *gin.Context) {
 	//ここで結合する
 	warningPoints := WorningIntersectionPoints

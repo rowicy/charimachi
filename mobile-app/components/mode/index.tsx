@@ -1,4 +1,10 @@
-import { Box } from "@/components/ui/box";
+import {
+  Actionsheet,
+  ActionsheetContent,
+  ActionsheetDragIndicator,
+  ActionsheetDragIndicatorWrapper,
+  ActionsheetBackdrop,
+} from "@/components/ui/actionsheet";
 import {
   Checkbox,
   CheckboxGroup,
@@ -7,78 +13,59 @@ import {
   CheckboxLabel,
 } from "@/components/ui/checkbox";
 import { MODES } from "@/constants/modes";
-import SummaryItem from "./summary-item";
 import { CheckIcon } from "../ui/icon";
+import { useCallback, useState } from "react";
+import { Fab, FabLabel, FabIcon } from "@/components/ui/fab";
+import { AddIcon } from "@/components/ui/icon";
 
 interface Props {
   loading: boolean;
-  distance?: number;
-  duration?: number;
   modes: string[];
   setModes: (modes: string[]) => void;
-  error?: boolean;
-  destination: boolean;
 }
 
-export default function Mode({
-  loading,
-  distance,
-  duration,
-  modes,
-  setModes,
-  error,
-  destination,
-}: Props) {
+export default function Mode({ loading, modes, setModes }: Props) {
+  const [open, setOpen] = useState(false);
+  const handleClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
   return (
-    <Box className="z-50 p-4 bg-white/80 rounded-lg shadow-lg w-full">
-      {/* NOTE: モード選択 */}
-      <CheckboxGroup value={modes} onChange={setModes}>
-        {Object.entries(MODES).map(([key, label]) => (
-          <Checkbox
-            key={key}
-            value={key}
-            isDisabled={loading}
-            className="bg-transparent"
-          >
-            <CheckboxIndicator>
-              <CheckboxIcon as={CheckIcon} />
-            </CheckboxIndicator>
-            {/* 強制的にテキスト色を黒に固定 */}
-            <CheckboxLabel style={{ color: "#000" }}>{label}</CheckboxLabel>
-          </Checkbox>
-        ))}
-      </CheckboxGroup>
+    <>
+      <Fab
+        size="md"
+        placement="bottom right"
+        onPress={() => setOpen(true)}
+        className="bottom-28"
+      >
+        <FabIcon as={AddIcon} />
+        <FabLabel>モード切替</FabLabel>
+      </Fab>
 
-      {destination && (
-        <Box className="mt-4">
-          {/* NOTE: 距離 */}
-          <SummaryItem
-            label="距離"
-            value={distance}
-            unit="m"
-            loading={loading}
-          />
+      <Actionsheet isOpen={open} onClose={handleClose}>
+        <ActionsheetBackdrop />
+        <ActionsheetContent>
+          <ActionsheetDragIndicatorWrapper>
+            <ActionsheetDragIndicator />
+          </ActionsheetDragIndicatorWrapper>
 
-          {/* NOTE: 所要時間 */}
-          <SummaryItem
-            label="所要時間"
-            value={duration}
-            unit="分"
-            loading={loading}
-            error={error}
-          />
-
-          {/* NOTE: 残り時間 */}
-          <SummaryItem
-            label="残り時間"
-            // TODO: 残り時間を算出
-            value={duration}
-            unit="分"
-            loading={loading}
-            error={error}
-          />
-        </Box>
-      )}
-    </Box>
+          <CheckboxGroup value={modes} onChange={setModes}>
+            {Object.entries(MODES).map(([key, label]) => (
+              <Checkbox
+                key={key}
+                value={key}
+                isDisabled={loading}
+                className="bg-transparent"
+              >
+                <CheckboxIndicator>
+                  <CheckboxIcon as={CheckIcon} />
+                </CheckboxIndicator>
+                <CheckboxLabel>{label}</CheckboxLabel>
+              </Checkbox>
+            ))}
+          </CheckboxGroup>
+        </ActionsheetContent>
+      </Actionsheet>
+    </>
   );
 }
