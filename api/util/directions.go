@@ -219,7 +219,7 @@ func GetDirections(c *gin.Context) {
 	status, orsResp := GetDirectionsBase(start, end)
 	directionsResponse, ok := orsResp.(DirectionsResponse)
 	if ok {
-		directionsResponse.Features[0].Geometry.Coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, [][]float64{})
+		//directionsResponse.Features[0].Geometry.Coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, [][]float64{})
 
 		//TODO ComfortScoreはサンプル
 		directionsResponse.ComfortScore = 49 // https://github.com/rowicy/charimachi/issues/34
@@ -260,18 +260,27 @@ func GetBicycleParkingDirection(searchCoordinates [][]float64, coordinates [][]f
 		prePosition = v
 		fmt.Println("distance:", distance)
 
-		var query = "[bicycle_parking]&viewbox="
-		query += strconv.FormatFloat(v[0]-0.011, 'f', -1, 64)
-		query += ","
-		query += strconv.FormatFloat(v[1]-0.011, 'f', -1, 64)
-		query += strconv.FormatFloat(v[0]+0.011, 'f', -1, 64)
-		query += ","
-		query += strconv.FormatFloat(v[1]+0.011, 'f', -1, 64)
-		searchResp := GetSearchBase(query)
+		var query = "駐輪場"
+		var query2 = "&viewbox="
+		query2 += strconv.FormatFloat(v[0]-0.011, 'f', -1, 64)
+		query2 += ","
+		query2 += strconv.FormatFloat(v[1]-0.011, 'f', -1, 64)
+		query2 += ","
+		query2 += strconv.FormatFloat(v[0]+0.011, 'f', -1, 64)
+		query2 += ","
+		query2 += strconv.FormatFloat(v[1]+0.011, 'f', -1, 64)
+		query2 += "&bounded=1"
+		searchResp := GetSearchBase(query, query2)
 		searchResponse, ok := searchResp.([]SearchResponse)
+
+		fmt.Println(searchResponse)
+
 		if ok && (distance > 500) && len(searchResponse) != 0 {
-			_, orsResp := GetDirectionsBase(searchResponse[0].Lon, searchResponse[0].Lat)
-			if directionsResponse, ok := orsResp.(DirectionsResponse); ok {
+			_, orsResp := GetDirectionsBase(
+				searchResponse[0].Lon+","+searchResponse[0].Lat,
+				strconv.FormatFloat(searchCoordinates[len(searchCoordinates)-1][0], 'f', -1, 64)+","+strconv.FormatFloat(searchCoordinates[len(searchCoordinates)-1][1], 'f', -1, 64))
+			directionsResponse, directionOK := orsResp.(DirectionsResponse)
+			if directionOK {
 				coordinates = append(coordinates, v)
 				coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, coordinates)
 				return coordinates
