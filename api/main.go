@@ -60,12 +60,10 @@ func main() {
 		v1.GET("/search", util.GetSearch)
 		//注意点
 		v1.GET("/warningPoint", util.GetWarningPoints)
-		//違反率
-		v1.GET("/violation_rates", util.GetViolationRates)
 	}
 
 	// Start server on port 8080
-	r.Run("0.0.0.0:8080")
+	r.Run(":8080")
 }
 
 func loadWarningIntersection() {

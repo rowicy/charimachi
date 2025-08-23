@@ -24,7 +24,6 @@ type DirectionsResponse struct {
 	Metadata      ORSMetadata    `json:"metadata"`
 	WarningPoints []WarningPoint `json:"warning_points"` //XXX 追加項目
 	ComfortScore  int            `json:"comfort_score"`  //XXX 追加項目, 0-100のスコア
-	SessoinID     string         `json:"session_id"`     //XXX 追加項目, セッションID
 }
 
 // ORSFeature represents a feature in the GeoJSON response
@@ -210,9 +209,9 @@ func GetDirections(c *gin.Context) {
 	// クエリパラメータの取得
 	start := c.Query("start")
 	end := c.Query("end")
-	viaBikeParking := c.DefaultQuery("via_bike_parking", "false")
-	avoidBusStops := c.DefaultQuery("avoid_bus_stops", "false")
-	avoidTrafficLights := c.DefaultQuery("avoid_traffic_lights", "false")
+	_ = c.DefaultQuery("via_bike_parking", "false")
+	_ = c.DefaultQuery("avoid_bus_stops", "false")
+	_ = c.DefaultQuery("avoid_traffic_lights", "false")
 	// バリデーション
 	if start == "" || end == "" {
 		var er ORSErrorResponse
@@ -310,27 +309,7 @@ func GetDirections(c *gin.Context) {
 	// }
 
 	//TODO ComfortScoreはサンプル
-	orsResp.ComfortScore = 49 // https://github.com/rowicy/charimachi/issues/34
-	var comfortLevel = 0
-	if viaBikeParking == "true" {
-		comfortLevel++
-	}
-	if avoidBusStops == "true" {
-		comfortLevel++
-	}
-	if avoidTrafficLights == "true" {
-		comfortLevel++
-	}
-	switch comfortLevel {
-	case 1:
-		orsResp.ComfortScore = 79
-	case 2:
-		orsResp.ComfortScore = 89
-	case 3:
-		orsResp.ComfortScore = 100
-	}
-	orsResp.SessoinID = GenerateSessionID()
-	SessionIDResponse[orsResp.SessoinID] = orsResp.Features[0].Geometry
+	orsResp.ComfortScore = 85 // 0-100のスコア
 
 	c.JSON(http.StatusOK, orsResp)
 }

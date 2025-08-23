@@ -67,7 +67,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/util.DirectionsResponse"
+                                    "$ref": "#/components/schemas/main.DirectionsResponse"
                                 }
                             }
                         }
@@ -77,7 +77,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/util.ORSErrorResponse"
+                                    "$ref": "#/components/schemas/main.ORSErrorResponse"
                                 }
                             }
                         }
@@ -87,7 +87,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/util.ORSErrorResponse"
+                                    "$ref": "#/components/schemas/main.ORSErrorResponse"
                                 }
                             }
                         }
@@ -97,7 +97,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/util.ORSErrorResponse"
+                                    "$ref": "#/components/schemas/main.ORSErrorResponse"
                                 }
                             }
                         }
@@ -153,7 +153,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/util.SearchResponse"
+                                        "$ref": "#/components/schemas/main.SearchResponse"
                                     }
                                 }
                             }
@@ -164,7 +164,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/util.ErrorResponse"
+                                    "$ref": "#/components/schemas/main.ErrorResponse"
                                 }
                             }
                         }
@@ -174,7 +174,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/util.ErrorResponse"
+                                    "$ref": "#/components/schemas/main.ErrorResponse"
                                 }
                             }
                         }
@@ -184,45 +184,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/util.ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/violation_rates": {
-            "get": {
-                "description": "Returns violation rates for specific coordinates. If session_id is not provided, returns nil.",
-                "tags": [
-                    "get"
-                ],
-                "summary": "Get violation rates",
-                "parameters": [
-                    {
-                        "example": "session_id=53238c22-12ac-8ff8-fcdd-738d30a780df",
-                        "description": "Session ID",
-                        "name": "session_id",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of violation rates for given coordinates",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "type": "array",
-                                        "items": {
-                                            "$ref": "#/components/schemas/util.ViolationRate"
-                                        }
-                                    }
+                                    "$ref": "#/components/schemas/main.ErrorResponse"
                                 }
                             }
                         }
@@ -238,46 +200,57 @@
     ],
     "components": {
         "schemas": {
-            "util.DirectionsResponse": {
+            "main.DirectionsResponse": {
+                "description": "OpenRouteServiceのGeoJSONレスポンスに加え、警告地点(WarningPoints)と快適度スコア(ComfortScore)を含む",
                 "type": "object",
                 "properties": {
                     "bbox": {
+                        "description": "Bounding box",
                         "type": "array",
                         "items": {
                             "type": "number"
                         }
                     },
                     "comfort_score": {
-                        "description": "XXX 追加項目, 0-100のスコア",
+                        "description": "追加: 快適度スコア(0-100)",
                         "type": "integer"
                     },
                     "features": {
+                        "description": "Route features",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/util.ORSFeature"
+                            "$ref": "#/components/schemas/main.ORSFeature"
                         }
                     },
-                    "metadata": {
-                        "$ref": "#/components/schemas/util.ORSMetadata"
-                    },
-                    "session_id": {
-                        "description": "XXX 追加項目, セッションID",
-                        "type": "string"
-                    },
-                    "type": {
-                        "description": "https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get\nのレスポンスを構造体に",
-                        "type": "string"
-                    },
-                    "warning_points": {
+                    "intersection_violation_rate": {
                         "description": "XXX 追加項目",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/util.WarningPoint"
+                            "$ref": "#/components/schemas/main.Intersection_Violation_Rate"
+                        }
+                    },
+                    "metadata": {
+                        "description": "Metadata",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/main.ORSMetadata"
+                            }
+                        ]
+                    },
+                    "type": {
+                        "description": "GeoJSON type",
+                        "type": "string"
+                    },
+                    "warning_points": {
+                        "description": "追加: 警告地点",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/main.WarningPoint"
                         }
                     }
                 }
             },
-            "util.ErrorResponse": {
+            "main.ErrorResponse": {
                 "type": "object",
                 "properties": {
                     "error": {
@@ -290,7 +263,24 @@
                     }
                 }
             },
-            "util.ORSEngine": {
+            "main.Intersection_Violation_Rate": {
+                "type": "object",
+                "properties": {
+                    "coordinate": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "intersection": {
+                        "type": "string"
+                    },
+                    "rate_score": {
+                        "type": "number"
+                    }
+                }
+            },
+            "main.ORSEngine": {
                 "type": "object",
                 "properties": {
                     "build_date": {
@@ -307,7 +297,7 @@
                     }
                 }
             },
-            "util.ORSErrorResponse": {
+            "main.ORSErrorResponse": {
                 "type": "object",
                 "properties": {
                     "error": {
@@ -323,7 +313,7 @@
                     }
                 }
             },
-            "util.ORSFeature": {
+            "main.ORSFeature": {
                 "type": "object",
                 "properties": {
                     "bbox": {
@@ -333,27 +323,27 @@
                         }
                     },
                     "geometry": {
-                        "$ref": "#/components/schemas/util.ORSGeometry"
+                        "$ref": "#/components/schemas/main.ORSGeometry"
                     },
                     "properties": {
-                        "$ref": "#/components/schemas/util.ORSFeatureProperties"
+                        "$ref": "#/components/schemas/main.ORSFeatureProperties"
                     },
                     "type": {
                         "type": "string"
                     }
                 }
             },
-            "util.ORSFeatureProperties": {
+            "main.ORSFeatureProperties": {
                 "type": "object",
                 "properties": {
                     "segments": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/util.ORSSegment"
+                            "$ref": "#/components/schemas/main.ORSSegment"
                         }
                     },
                     "summary": {
-                        "$ref": "#/components/schemas/util.ORSSummary"
+                        "$ref": "#/components/schemas/main.ORSSummary"
                     },
                     "way_points": {
                         "type": "array",
@@ -363,7 +353,7 @@
                     }
                 }
             },
-            "util.ORSGeometry": {
+            "main.ORSGeometry": {
                 "type": "object",
                 "properties": {
                     "coordinates": {
@@ -381,17 +371,17 @@
                     }
                 }
             },
-            "util.ORSMetadata": {
+            "main.ORSMetadata": {
                 "type": "object",
                 "properties": {
                     "attribution": {
                         "type": "string"
                     },
                     "engine": {
-                        "$ref": "#/components/schemas/util.ORSEngine"
+                        "$ref": "#/components/schemas/main.ORSEngine"
                     },
                     "query": {
-                        "$ref": "#/components/schemas/util.ORSQuery"
+                        "$ref": "#/components/schemas/main.ORSQuery"
                     },
                     "service": {
                         "type": "string"
@@ -401,7 +391,7 @@
                     }
                 }
             },
-            "util.ORSQuery": {
+            "main.ORSQuery": {
                 "type": "object",
                 "properties": {
                     "coordinates": {
@@ -425,7 +415,7 @@
                     }
                 }
             },
-            "util.ORSSegment": {
+            "main.ORSSegment": {
                 "type": "object",
                 "properties": {
                     "distance": {
@@ -437,12 +427,12 @@
                     "steps": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/util.ORSStep"
+                            "$ref": "#/components/schemas/main.ORSStep"
                         }
                     }
                 }
             },
-            "util.ORSStep": {
+            "main.ORSStep": {
                 "type": "object",
                 "properties": {
                     "distance": {
@@ -468,7 +458,7 @@
                     }
                 }
             },
-            "util.ORSSummary": {
+            "main.ORSSummary": {
                 "type": "object",
                 "properties": {
                     "distance": {
@@ -479,7 +469,7 @@
                     }
                 }
             },
-            "util.SearchResponse": {
+            "main.SearchResponse": {
                 "type": "object",
                 "properties": {
                     "addresstype": {
@@ -543,24 +533,7 @@
                     }
                 }
             },
-            "util.ViolationRate": {
-                "type": "object",
-                "properties": {
-                    "coordinate": {
-                        "type": "array",
-                        "items": {
-                            "type": "number"
-                        }
-                    },
-                    "message": {
-                        "type": "string"
-                    },
-                    "violation_rate": {
-                        "type": "number"
-                    }
-                }
-            },
-            "util.WarningPoint": {
+            "main.WarningPoint": {
                 "type": "object",
                 "properties": {
                     "coordinate": {
