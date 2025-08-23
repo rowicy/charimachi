@@ -22,8 +22,6 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 
-var worningIntersectionPoints []util.WarningPoint
-
 func main() {
 	loadWarningIntersection()
 
@@ -61,7 +59,7 @@ func main() {
 		// 目的地検索
 		v1.GET("/search", util.GetSearch)
 		//注意点
-		v1.GET("/warningPoint", GetWarningPoints)
+		v1.GET("/warningPoint", util.GetWarningPoints)
 	}
 
 	// Start server on port 8080
@@ -76,7 +74,7 @@ func loadWarningIntersection() {
 	}
 
 	decoder := json.NewDecoder(warningIntersectionFile)
-	if err := decoder.Decode(&worningIntersectionPoints); err != nil {
+	if err := decoder.Decode(&util.WorningIntersectionPoints); err != nil {
 		fmt.Println("JSONデコードエラー:", err)
 		return
 	}
