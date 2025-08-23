@@ -86,7 +86,9 @@
 
 ### （バス停回避モード）
 
-- [公共交通オープンデータ - 都営バス停留所データ](https://ckan.odpt.org/dataset/b_busstop-toei/resource/f340278d-aefe-47ea-bc8f-15ebe48c286d) ?
+- [公共交通オープンデータ - 都営バス停留所データ](https://ckan.odpt.org/dataset/b_busstop-toei/resource/f340278d-aefe-47ea-bc8f-15ebe48c286d)
+    
+    必要情報のみ抜き出し加工
 
 ## 構成図
 
