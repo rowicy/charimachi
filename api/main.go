@@ -60,6 +60,8 @@ func main() {
 		v1.GET("/directions/bicycle", util.GetDirections)
 		// 目的地検索
 		v1.GET("/search", util.GetSearch)
+		//注意点
+		v1.GET("/warningPoint", GetWarningPoints)
 	}
 
 	// Start server on port 8080
