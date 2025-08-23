@@ -124,12 +124,52 @@ export default function MapsScreen() {
     return [];
   }, [currentLocation, directions?.features]);
 
-  const durationMinutes = useMemo(() => {
+  const distance = useMemo(() => {
+    // NOTE: 1000m以上の場合はkmで返す
+    if (directions?.features?.[0]?.properties?.summary?.distance) {
+      if (directions.features[0].properties.summary.distance >= 1000) {
+        return {
+          value: Number(
+            (directions.features[0].properties.summary.distance / 1000).toFixed(
+              1,
+            ),
+          ),
+          unit: "km",
+        };
+      }
+      // NOTE: 1000m未満の場合はmで返す
+      return {
+        value: Math.round(directions.features[0].properties.summary.distance),
+        unit: "m",
+      };
+    }
+  }, [directions?.features]);
+
+  const duration = useMemo(() => {
     if (directions?.features?.[0]?.properties?.summary?.duration) {
-      return Math.ceil(directions.features[0].properties.summary.duration / 60);
+      // NOTE: 60分(3600秒)未満の場合は分で返す
+      if (directions.features[0].properties.summary.duration < 3600) {
+        return {
+          value: Math.ceil(
+            directions.features[0].properties.summary.duration / 60,
+          ),
+          unit: "分",
+        };
+      }
+
+      // NOTE: n.n時間
+      return {
+        value: Math.ceil(
+          directions.features[0].properties.summary.duration / 3600,
+        ),
+        unit: "時間",
+      };
     }
 
-    return 0;
+    return {
+      value: 0,
+      unit: "分",
+    };
   }, [directions]);
 
   useEffect(() => {
@@ -256,10 +296,8 @@ export default function MapsScreen() {
             {/* NOTE: モード選択 */}
             <Mode
               loading={isLoading || isLoadingDirections}
-              distance={
-                directions?.features?.[0]?.properties?.summary?.distance
-              }
-              duration={durationMinutes}
+              distance={distance}
+              duration={duration}
               modes={modes}
               setModes={setModes}
               error={!!destination && isErrorDirections}

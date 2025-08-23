@@ -12,8 +12,14 @@ import { CheckIcon } from "../ui/icon";
 
 interface Props {
   loading: boolean;
-  distance?: number;
-  duration?: number;
+  distance?: {
+    value: number;
+    unit: string;
+  };
+  duration?: {
+    value: number;
+    unit: string;
+  };
   modes: string[];
   setModes: (modes: string[]) => void;
   error?: boolean;
@@ -54,16 +60,16 @@ export default function Mode({
           {/* NOTE: 距離 */}
           <SummaryItem
             label="距離"
-            value={distance}
-            unit="m"
+            value={distance?.value}
+            unit={distance?.unit}
             loading={loading}
           />
 
           {/* NOTE: 所要時間 */}
           <SummaryItem
             label="所要時間"
-            value={duration}
-            unit="分"
+            value={duration?.value}
+            unit={duration?.unit}
             loading={loading}
             error={error}
           />
@@ -72,8 +78,8 @@ export default function Mode({
           <SummaryItem
             label="残り時間"
             // TODO: 残り時間を算出
-            value={duration}
-            unit="分"
+            value={duration?.value}
+            unit={duration?.unit}
             loading={loading}
             error={error}
           />

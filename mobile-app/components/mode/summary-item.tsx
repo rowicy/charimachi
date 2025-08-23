@@ -4,7 +4,7 @@ import Skeleton from "@/components/skeleton";
 interface Props {
   label: string;
   value?: number;
-  unit: string;
+  unit?: string;
   loading: boolean;
   error?: boolean;
 }
