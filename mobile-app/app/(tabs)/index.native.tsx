@@ -296,24 +296,28 @@ export default function MapsScreen() {
 
             {/* NOTE: 違反箇所のマーカーを表示 */}
             {!isLoadingViolationRates &&
-              Object.entries(violationRates?.[0] || {}).map(([key, item]) => {
-                if (!item.coordinate?.[0] || !item.coordinate?.[1]) return null;
+              violationRates?.violation_rates &&
+              Object.entries(violationRates.violation_rates).map(
+                ([key, item]) => {
+                  if (!item.coordinate?.[0] || !item.coordinate?.[1])
+                    return null;
 
-                return (
-                  <Marker
-                    key={key}
-                    coordinate={{
-                      latitude: item.coordinate?.[1],
-                      longitude: item.coordinate?.[0],
-                    }}
-                    title={item.message}
-                    description={item.message}
-                    type="VIOLATION"
-                    count={item.violation_count}
-                    rate={item.violation_rate}
-                  />
-                );
-              })}
+                  return (
+                    <Marker
+                      key={key}
+                      coordinate={{
+                        latitude: item.coordinate?.[1],
+                        longitude: item.coordinate?.[0],
+                      }}
+                      title={item.message}
+                      description={item.message}
+                      type="VIOLATION"
+                      count={item.violation_count}
+                      rate={item.violation_rate}
+                    />
+                  );
+                },
+              )}
 
             {/* NOTE: 現在地 */}
             {currentLocation && (

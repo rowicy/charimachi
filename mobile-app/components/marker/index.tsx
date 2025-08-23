@@ -21,8 +21,8 @@ export default function Marker({ type, count, rate, ...props }: Props) {
     if (type === "VIOLATION") {
       // NOTE: 違反件数が多いもしくは違反率が高い箇所はサイズを大きくする
 
-      if (count) addSize += count / 100;
-      if (rate) addSize += (rate * 100) / 10;
+      if (count) addSize += count / 1000; // 1000件で+1
+      if (rate) addSize += (rate * 100) / 50; // 50%で+1
     }
 
     return Math.round(baseSize + addSize);
