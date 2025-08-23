@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"encoding/json"
@@ -15,33 +15,15 @@ import (
 )
 
 // =================レスポンス=================
-// DirectionsResponse represents the GeoJSON response for directions
-// @Description OpenRouteServiceのGeoJSONレスポンスに加え、警告地点(WarningPoints)と快適度スコア(ComfortScore)を含む
 type DirectionsResponse struct {
 	// https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get
 	// のレスポンスを構造体に
-	Type                        string                        `json:"type"`
-	BBox                        []float64                     `json:"bbox"`
-	Features                    []ORSFeature                  `json:"features"`
-	Metadata                    ORSMetadata                   `json:"metadata"`
-	WarningPoints               []WarningPoint                `json:"warning_points"`              //XXX 追加項目
-	Intersection_Violation_Rate []Intersection_Violation_Rate `json:"intersection_violation_rate"` //XXX 追加項目
-	ComfortScore                int                           `json:"comfort_score"`               //XXX 追加項目, 0-100のスコア
-}
-
-// XXX カスタム構造体
-type WarningPoint struct {
-	Type       string    `json:"type"`       //交差点なのか直線道路なのか(このフィールドいらない)
-	Name       string    `json:"name"`       //名称, 地元での言われ名など(地獄谷etc)
-	Coordinate []float64 `json:"coordinate"` //座標
-	Message    string    `json:"message"`    //警告のメッセージ(どんな事故が多かったか)
-}
-
-// XXX カスタム構造体
-type Intersection_Violation_Rate struct {
-	Intersection string    `json:"intersection"`
-	Coordinate   []float64 `json:"coordinate"`
-	RateScore    float64   `json:"rate_score"`
+	Type          string         `json:"type"`
+	BBox          []float64      `json:"bbox"`
+	Features      []ORSFeature   `json:"features"`
+	Metadata      ORSMetadata    `json:"metadata"`
+	WarningPoints []WarningPoint `json:"warning_points"` //XXX 追加項目
+	ComfortScore  int            `json:"comfort_score"`  //XXX 追加項目, 0-100のスコア
 }
 
 // ORSFeature represents a feature in the GeoJSON response
@@ -223,7 +205,7 @@ type ORSErrorResponse struct {
 // @Failure 404 {object} ORSErrorResponse "ルートが見つからない"
 // @Failure 500 {object} ORSErrorResponse "サーバー内部エラー"
 // @Router /directions/bicycle [get]
-func getDirections(c *gin.Context) {
+func GetDirections(c *gin.Context) {
 	// クエリパラメータの取得
 	start := c.Query("start")
 	end := c.Query("end")
@@ -308,40 +290,23 @@ func getDirections(c *gin.Context) {
 	}
 
 	//TODO WarningPointsはサンプル
-	if orsResp.WarningPoints == nil {
-		coodinates := orsResp.Features[0].Geometry.Coordinates
-		orsResp.WarningPoints = []WarningPoint{
-			{
-				Type:       "intersection",
-				Name:       "地獄谷",
-				Coordinate: coodinates[1],
-				Message:    "過去に事故が多発した地点です。注意してください。",
-			},
-			{
-				Type:       "straight_road",
-				Name:       "無限道路",
-				Coordinate: coodinates[len(coodinates)-2],
-				Message:    "この道路は直線で、速度を出しやすいです。安全運転を心掛けてください。",
-			},
-		}
-	}
-
-	//TODO Intersection_Violation_Rateはサンプル
-	if orsResp.Intersection_Violation_Rate == nil {
-		coodinates := orsResp.Features[0].Geometry.Coordinates
-		orsResp.Intersection_Violation_Rate = []Intersection_Violation_Rate{
-			{
-				Intersection: "交差点A(座標が交差点ポイントになる予定)",
-				Coordinate:   coodinates[2],
-				RateScore:    0.75, // 0-1のスコア
-			},
-			{
-				Intersection: "交差点B(座標が交差点ポイントになる予定)",
-				Coordinate:   coodinates[5],
-				RateScore:    0.60, // 0-1のスコア
-			},
-		}
-	}
+	// if orsResp.WarningPoints == nil {
+	// 	coodinates := orsResp.Features[0].Geometry.Coordinates
+	// 	orsResp.WarningPoints = []WarningPoint{
+	// 		{
+	// 			Type:       "intersection",
+	// 			Name:       "地獄谷",
+	// 			Coordinate: coodinates[1],
+	// 			Message:    "過去に事故が多発した地点です。注意してください。",
+	// 		},
+	// 		{
+	// 			Type:       "straight_road",
+	// 			Name:       "無限道路",
+	// 			Coordinate: coodinates[len(coodinates)-2],
+	// 			Message:    "この道路は直線で、速度を出しやすいです。安全運転を心掛けてください。",
+	// 		},
+	// 	}
+	// }
 
 	//TODO ComfortScoreはサンプル
 	orsResp.ComfortScore = 85 // 0-100のスコア

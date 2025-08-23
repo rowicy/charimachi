@@ -7,6 +7,9 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
+
+	util "template-mobile-app-api/util"
 )
 
 type WorningIntersectionResponse struct {
@@ -43,12 +46,10 @@ type Hit struct {
 	Reason       string `json:"取締理由"`    // 取締理由
 }
 
-var worningIntersectionPoints []WarningPoint
+//var worningIntersectionPoints []WarningPoint
 
 // 取締強化交差点注意（オープンデータ）から全データキャッシュ
-
-func CashWorningIntersection() {
-
+func main() {
 	url := "https://service.api.metro.tokyo.lg.jp/api/t000022d1700000024-29a128f7bb366ba2832927fac7feeaa4-0/json?limit=1000"
 
 	reqBody := map[string]interface{}{
@@ -83,17 +84,24 @@ func CashWorningIntersection() {
 		return
 	}
 
+	worningIntersectionPoints := []util.WarningPoint{}
 	worningIntersectionResponse := WorningIntersectionResponse{}
 	json.Unmarshal(body, &worningIntersectionResponse)
 	for i, v := range worningIntersectionResponse.Hits {
-		//ロケーションをローマ字変換する
-		searchResp := getSearchBase(v.Location)
+		//取締り強化交差点データのLocationには「〇〇付近」とあり、検索の邪魔なので消す。
+		Location := strings.Replace(v.Location, "付近", "", -1)
+		searchResp := util.GetSearchBase(Location)
 		fmt.Println(v.Location)
-		if searchResponse, ok := searchResp.([]SearchResponse); ok {
+		if searchResponse, ok := searchResp.([]util.SearchResponse); ok {
+			worningIntersectionPoints = append(worningIntersectionPoints, util.WarningPoint{})
+
+			if len(searchResponse) <= 0 {
+				continue
+			}
 			lon, _ := strconv.ParseFloat(searchResponse[0].Lon, 64)
 			lat, _ := strconv.ParseFloat(searchResponse[0].Lat, 64)
-			worningIntersectionPoints[i].Name = v.Location
 			worningIntersectionPoints[i].Coordinate = []float64{lon, lat}
+			worningIntersectionPoints[i].Name = v.Location
 			worningIntersectionPoints[i].Message = v.Reason
 
 		}
