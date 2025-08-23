@@ -219,7 +219,7 @@ func GetDirections(c *gin.Context) {
 	status, orsResp := GetDirectionsBase(start, end)
 	directionsResponse, ok := orsResp.(DirectionsResponse)
 	if ok {
-		//directionsResponse.Features[0].Geometry.Coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, [][]float64{})
+		directionsResponse.Features[0].Geometry.Coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, [][]float64{})
 
 		//TODO ComfortScoreはサンプル
 		directionsResponse.ComfortScore = 49 // https://github.com/rowicy/charimachi/issues/34
@@ -257,20 +257,23 @@ func GetBicycleParkingDirection(searchCoordinates [][]float64, coordinates [][]f
 		distance += math.Abs(lon) * metersPerDegree
 		distance += math.Abs(lat) * metersPerDegree
 
+		prePosition = v
+		fmt.Println("distance:", distance)
+
 		var query = "[bicycle_parking]&viewbox="
-		query += strconv.FormatFloat(v[0]-0.001, 'f', -1, 64)
+		query += strconv.FormatFloat(v[0]-0.011, 'f', -1, 64)
 		query += ","
-		query += strconv.FormatFloat(v[1]-0.001, 'f', -1, 64)
-		query += strconv.FormatFloat(v[0]+0.001, 'f', -1, 64)
+		query += strconv.FormatFloat(v[1]-0.011, 'f', -1, 64)
+		query += strconv.FormatFloat(v[0]+0.011, 'f', -1, 64)
 		query += ","
-		query += strconv.FormatFloat(v[1]+0.001, 'f', -1, 64)
+		query += strconv.FormatFloat(v[1]+0.011, 'f', -1, 64)
 		searchResp := GetSearchBase(query)
 		searchResponse, ok := searchResp.([]SearchResponse)
-		if ok && (distance > 1000) && len(searchResponse) != 0 {
+		if ok && (distance > 500) && len(searchResponse) != 0 {
 			_, orsResp := GetDirectionsBase(searchResponse[0].Lon, searchResponse[0].Lat)
 			if directionsResponse, ok := orsResp.(DirectionsResponse); ok {
 				coordinates = append(coordinates, v)
-				GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, coordinates)
+				coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, coordinates)
 				return coordinates
 			}
 		} else {
