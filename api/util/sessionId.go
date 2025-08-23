@@ -1,7 +1,15 @@
 package util
 
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
+
 func GenerateSessionID() string {
-	return "53238c22-12ac-8ff8-fcdd-738d30a780df" //TODO セッションIDを発行する
+	value := uuid.New().String()
+	fmt.Printf("Generated session_id: %s\n", value) // TODO デバッグ用
+	return value
 }
 
 var SessionIDResponse = map[string]ORSGeometry{}

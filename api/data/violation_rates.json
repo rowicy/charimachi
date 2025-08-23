@@ -1,0 +1,758 @@
+[
+  {
+    "type": "intersection",
+    "violation_rate": 0.37,
+    "violation_count": 539,
+    "coordinate": [
+      139.7493886,
+      35.6703292
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.46,
+    "violation_count": 683,
+    "coordinate": [
+      139.73644311337648,
+      35.6781295848081
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.52,
+    "violation_count": 1455,
+    "coordinate": [
+      139.729586,
+      35.6859175
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.32,
+    "violation_count": 582,
+    "coordinate": [
+      139.7346872,
+      35.6918754
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.5,
+    "violation_count": 1736,
+    "coordinate": [
+      139.7447926,
+      35.7026267
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.48,
+    "violation_count": 2133,
+    "coordinate": [
+      139.7553139,
+      35.702338
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.54,
+    "violation_count": 2240,
+    "coordinate": [
+      139.7754284,
+      35.6955124
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.55,
+    "violation_count": 2015,
+    "coordinate": [
+      139.7755534,
+      35.6894263
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.5700000000000001,
+    "violation_count": 1805,
+    "coordinate": [
+      139.7671822,
+      35.6695695
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.91,
+    "violation_count": 1903,
+    "coordinate": [
+      139.61856182319335,
+      35.74914425979588
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.29,
+    "violation_count": 1195,
+    "coordinate": [
+      139.703173,
+      35.657964
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.53,
+    "violation_count": 1986,
+    "coordinate": [
+      139.7045987,
+      35.6803745
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.28,
+    "violation_count": 965,
+    "coordinate": [
+      139.7040462,
+      35.6897029
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.36,
+    "violation_count": 1453,
+    "coordinate": [
+      139.7057469,
+      35.6923881
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.68,
+    "violation_count": 3133,
+    "coordinate": [
+      139.7114216,
+      35.7143918
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.78,
+    "violation_count": 3873,
+    "coordinate": [
+      139.71688912911642,
+      35.733540914349774
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.8300000000000001,
+    "violation_count": 4634,
+    "coordinate": [
+      139.7281901,
+      35.744238
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.88,
+    "violation_count": 4114,
+    "coordinate": [
+      139.7381068,
+      35.7534992
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.72,
+    "violation_count": 4711,
+    "coordinate": [
+      139.7381068,
+      35.7534992
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.91,
+    "violation_count": 5472,
+    "coordinate": [
+      139.77668492055287,
+      35.73707582008481
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.81,
+    "violation_count": 5112,
+    "coordinate": [
+      139.7918794,
+      35.7300725
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.8300000000000001,
+    "violation_count": 4981,
+    "coordinate": [
+      139.8182983,
+      35.7224111
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.71,
+    "violation_count": 4118,
+    "coordinate": [
+      139.8253992,
+      35.7017882
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.8,
+    "violation_count": 5463,
+    "coordinate": [
+      139.8257935,
+      35.6966427
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.91,
+    "violation_count": 5162,
+    "coordinate": [
+      139.8267867,
+      35.6748322
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.53,
+    "violation_count": 2908,
+    "coordinate": [
+      139.7606012,
+      35.7075224
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.71,
+    "violation_count": 2420,
+    "coordinate": [
+      139.7781957,
+      35.712167
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.65,
+    "violation_count": 3713,
+    "coordinate": [
+      139.789118,
+      35.7016374
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.55,
+    "violation_count": 2080,
+    "coordinate": [
+      139.7843588,
+      35.6948849
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.46,
+    "violation_count": 1362,
+    "coordinate": [
+      139.7706445,
+      35.6666091
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.47000000000000003,
+    "violation_count": 1318,
+    "coordinate": [
+      139.7040462,
+      35.6897029
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.34,
+    "violation_count": 1172,
+    "coordinate": [
+      139.7057469,
+      35.6923881
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.33,
+    "violation_count": 1617,
+    "coordinate": [
+      139.6990983,
+      35.6936998
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.72,
+    "violation_count": 1228,
+    "coordinate": [
+      139.8949207,
+      35.7357624
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.81,
+    "violation_count": 4315,
+    "coordinate": [
+      139.7352884,
+      35.5776532
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.52,
+    "violation_count": 2126,
+    "coordinate": [
+      139.71174280399708,
+      35.595574962107726
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.81,
+    "violation_count": 3266,
+    "coordinate": [
+      139.69750588067566,
+      35.60369374826183
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.74,
+    "violation_count": 3681,
+    "coordinate": [
+      139.6804688591751,
+      35.62061383074898
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.66,
+    "violation_count": 5546,
+    "coordinate": [
+      139.66456635420562,
+      35.635579926108
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.65,
+    "violation_count": 4399,
+    "coordinate": [
+      139.6607249,
+      35.6425111
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.68,
+    "violation_count": 5059,
+    "coordinate": [
+      139.66069467727505,
+      35.67249423961594
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.6900000000000001,
+    "violation_count": 4846,
+    "coordinate": [
+      139.65471440043694,
+      35.69804643666433
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.85,
+    "violation_count": 2420,
+    "coordinate": [
+      139.6626080714766,
+      35.734829337881045
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9400000000000001,
+    "violation_count": 4453,
+    "coordinate": [
+      139.6882187,
+      35.7551214
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.81,
+    "violation_count": 2640,
+    "coordinate": [
+      139.73421176264125,
+      35.76954855098466
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 5599,
+    "coordinate": [
+      139.7701011602601,
+      35.77818927359609
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 7525,
+    "coordinate": [
+      139.8030779954864,
+      35.77865808132008
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.85,
+    "violation_count": 1781,
+    "coordinate": [
+      139.87000820435946,
+      35.7283801312095
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.98,
+    "violation_count": 5370,
+    "coordinate": [
+      139.8816011,
+      35.7025451
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.93,
+    "violation_count": 5745,
+    "coordinate": [
+      139.8813149,
+      35.683088
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.91,
+    "violation_count": 4996,
+    "coordinate": [
+      139.87347243009518,
+      35.667706454466035
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9500000000000001,
+    "violation_count": 5166,
+    "coordinate": [
+      139.7404117,
+      35.5524133
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9500000000000001,
+    "violation_count": 8912,
+    "coordinate": [
+      139.72215036067402,
+      35.55795851440231
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.74,
+    "violation_count": 2712,
+    "coordinate": [
+      139.69647581343412,
+      35.56549107698808
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.81,
+    "violation_count": 1311,
+    "coordinate": [
+      139.64741095476435,
+      35.605049681493206
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9500000000000001,
+    "violation_count": 4148,
+    "coordinate": [
+      139.6312517,
+      35.621053
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.88,
+    "violation_count": 4787,
+    "coordinate": [
+      139.62118488728862,
+      35.637039398730195
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.88,
+    "violation_count": 6245,
+    "coordinate": [
+      139.6149418,
+      35.7080932
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.91,
+    "violation_count": 3052,
+    "coordinate": [
+      139.62875264214193,
+      35.74475154785147
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9,
+    "violation_count": 3165,
+    "coordinate": [
+      139.66455088586707,
+      35.76392383484508
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.91,
+    "violation_count": 4998,
+    "coordinate": [
+      139.6910135,
+      35.7800443
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.8200000000000001,
+    "violation_count": 4146,
+    "coordinate": [
+      139.7205381,
+      35.7836989
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 5142,
+    "coordinate": [
+      139.539761,
+      35.6566175
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.98,
+    "violation_count": 6707,
+    "coordinate": [
+      139.5487061,
+      35.6818041
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.85,
+    "violation_count": 3207,
+    "coordinate": [
+      139.5537404,
+      35.7149697
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.89,
+    "violation_count": 2752,
+    "coordinate": [
+      139.5576914,
+      35.7246091
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.92,
+    "violation_count": 3448,
+    "coordinate": [
+      139.5575435,
+      35.7320397
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.91,
+    "violation_count": 1514,
+    "coordinate": [
+      139.4427066,
+      35.6328933
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.89,
+    "violation_count": 2214,
+    "coordinate": [
+      139.4534784,
+      35.6485934
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.84,
+    "violation_count": 2762,
+    "coordinate": [
+      139.4651541,
+      35.7173378
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9,
+    "violation_count": 3058,
+    "coordinate": [
+      139.4668937,
+      35.7524377
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9400000000000001,
+    "violation_count": 2525,
+    "coordinate": [
+      139.3827156,
+      35.7268745
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 1311,
+    "coordinate": [
+      139.3836785,
+      35.7522328
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 711,
+    "coordinate": [
+      139.35346521927084,
+      35.64329264346841
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 3126,
+    "coordinate": [
+      139.328711,
+      35.660316
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 946,
+    "coordinate": [
+      139.3458392,
+      35.6843486
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9400000000000001,
+    "violation_count": 775,
+    "coordinate": [
+      139.3471644,
+      35.6854991
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.97,
+    "violation_count": 1233,
+    "coordinate": [
+      139.3384039,
+      35.7141643
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 797,
+    "coordinate": [
+      139.3384039,
+      35.7141643
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.96,
+    "violation_count": 1341,
+    "coordinate": [
+      139.3404489,
+      35.7209279
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.87,
+    "violation_count": 499,
+    "coordinate": [
+      139.3428964,
+      35.7240174
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.9500000000000001,
+    "violation_count": 3741,
+    "coordinate": [
+      139.5415144,
+      35.7318092
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.85,
+    "violation_count": 3638,
+    "coordinate": [
+      139.4752234,
+      35.6733467
+    ]
+  },
+  {
+    "type": "intersection",
+    "violation_rate": 0.77,
+    "violation_count": 220,
+    "coordinate": [
+      139.2283729,
+      35.7316444
+    ]
+  }
+]
