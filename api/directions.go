@@ -15,15 +15,15 @@ import (
 )
 
 // =================レスポンス=================
+// DirectionsResponse represents the GeoJSON response for directions
+// @Description OpenRouteServiceのGeoJSONレスポンスに加え、警告地点(WarningPoints)と快適度スコア(ComfortScore)を含む
 type DirectionsResponse struct {
-	// https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get
-	// のレスポンスを構造体に
-	Type          string         `json:"type"`
-	BBox          []float64      `json:"bbox"`
-	Features      []ORSFeature   `json:"features"`
-	Metadata      ORSMetadata    `json:"metadata"`
-	WarningPoints []WarningPoint `json:"warning_points"` //XXX 追加項目
-	ComfortScore  int            `json:"comfort_score"`  //XXX 追加項目, 0-100のスコア
+	Type          string         `json:"type"`           // GeoJSON type
+	BBox          []float64      `json:"bbox"`           // Bounding box
+	Features      []ORSFeature   `json:"features"`       // Route features
+	Metadata      ORSMetadata    `json:"metadata"`       // Metadata
+	WarningPoints []WarningPoint `json:"warning_points"` // 追加: 警告地点
+	ComfortScore  int            `json:"comfort_score"`  // 追加: 快適度スコア(0-100)
 }
 
 // XXX カスタム構造体
