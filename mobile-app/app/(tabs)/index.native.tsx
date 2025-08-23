@@ -325,8 +325,8 @@ export default function MapsScreen() {
               destination={!!destination}
             />
 
-            <Box className="flex flex-row items-center justify-center p-1 text-gray-500 bg-white/80 text-center mt-1">
-              <Text className="text-sm">&copy;&nbsp;</Text>
+            <Box className="flex flex-row items-center justify-center p-1 bg-white/80 text-center mt-1">
+              <Text className="text-sm text-gray-500">&copy;&nbsp;</Text>
               <Link href="https://www.openstreetmap.org/copyright">
                 <LinkText size="sm">OpenStreetMap contributors</LinkText>
               </Link>

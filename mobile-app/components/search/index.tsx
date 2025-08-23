@@ -28,7 +28,7 @@ export default function Search({
   return (
     <Box className="absolute top-16 left-1/2 -translate-x-1/2 w-[90vw] z-50">
       {/* NOTE: 入力欄 */}
-      <FormControl className="shadow-lg">
+      <FormControl className="shadow-lg w-11/12">
         <Input className="bg-white outline-none border-white">
           <InputSlot className="pl-3">
             <InputIcon as={SearchIcon} />
