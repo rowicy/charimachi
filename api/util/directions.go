@@ -217,8 +217,8 @@ func GetDirections(c *gin.Context) {
 	avoidTrafficLights := c.DefaultQuery("avoid_traffic_lights", "false")
 
 	status, orsResp := GetDirectionsBase(start, end)
-
-	if directionsResponse, ok := orsResp.(DirectionsResponse); ok {
+	directionsResponse, ok := orsResp.(DirectionsResponse)
+	if ok {
 		//directionsResponse.Features[0].Geometry.Coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, [][]float64{})
 
 		//TODO ComfortScoreはサンプル
@@ -244,7 +244,7 @@ func GetDirections(c *gin.Context) {
 		directionsResponse.SessoinID = GenerateSessionID()
 		SessionIDResponse[directionsResponse.SessoinID] = directionsResponse.Features[0].Geometry
 	}
-	c.JSON(status, orsResp)
+	c.JSON(status, directionsResponse)
 }
 
 func GetBicycleParkingDirection(searchCoordinates [][]float64, coordinates [][]float64) (returnCoordinates [][]float64) {
