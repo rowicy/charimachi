@@ -13,10 +13,11 @@ import { $api } from "@/api-client/api";
 import { Box } from "@/components/ui/box";
 import type { components } from "@/schema/api";
 import Search from "@/components/search";
-import Mode from "@/components/mode";
 import { Text } from "@/components/ui/text";
 import { Link, LinkText } from "@/components/ui/link";
 import Score from "@/components/score";
+import Result from "@/components/result";
+import Mode from "@/components/mode";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
@@ -292,15 +293,12 @@ export default function MapsScreen() {
             <Score score={directions?.comfort_score} />
           )}
 
-          <Box className="absolute bottom-28 left-1/2 -translate-x-1/2 w-[90vw] flex items-end flex-col">
-            {/* NOTE: モード選択 */}
-            <Mode
-              loading={isLoading || isLoadingDirections}
+          <Box className="absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] flex items-start flex-col">
+            <Result
               distance={distance}
               duration={duration}
-              modes={modes}
-              setModes={setModes}
-              error={!!destination && isErrorDirections}
+              loading={isLoading || isLoadingDirections}
+              error={isErrorDirections}
               destination={!!destination}
             />
 
@@ -311,6 +309,13 @@ export default function MapsScreen() {
               </Link>
             </Box>
           </Box>
+
+          {/* NOTE: モード切り替え */}
+          <Mode
+            loading={isLoadingDirections}
+            modes={modes}
+            setModes={setModes}
+          />
         </>
       )}
     </Box>

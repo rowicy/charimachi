@@ -8,7 +8,7 @@ import { Input, InputField, InputIcon, InputSlot } from "../ui/input";
 import { Text } from "../ui/text";
 import Item from "./item";
 
-interface Props {
+export interface SearchProps {
   keyword: string;
   setKeyword: (keyword: string) => void;
   open: boolean;
@@ -24,11 +24,11 @@ export default function Search({
   loading,
   destinations,
   onSelect,
-}: Props) {
+}: SearchProps) {
   return (
-    <Box className="absolute top-16 left-1/2 -translate-x-1/2 w-[90vw] shadow-lg z-50">
+    <Box className="absolute top-16 left-1/2 -translate-x-1/2 w-[90vw] z-50">
       {/* NOTE: 入力欄 */}
-      <FormControl>
+      <FormControl className="shadow-lg">
         <Input className="bg-white outline-none border-white">
           <InputSlot className="pl-3">
             <InputIcon as={SearchIcon} />
