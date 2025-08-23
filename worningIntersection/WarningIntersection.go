@@ -47,8 +47,6 @@ type Hit struct {
 	Reason       string `json:"取締理由"`    // 取締理由
 }
 
-//var worningIntersectionPoints []WarningPoint
-
 // 取締強化交差点注意（オープンデータ）から全データキャッシュ
 func main() {
 	url := "https://service.api.metro.tokyo.lg.jp/api/t000022d1700000024-29a128f7bb366ba2832927fac7feeaa4-0/json?limit=1000"

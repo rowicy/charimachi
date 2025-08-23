@@ -1,6 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -18,7 +22,11 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 
+var worningIntersectionPoints []util.WarningPoint
+
 func main() {
+	loadWarningIntersection()
+
 	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
@@ -56,4 +64,19 @@ func main() {
 
 	// Start server on port 8080
 	r.Run(":8080")
+}
+
+func loadWarningIntersection() {
+	warningIntersectionFile, err := os.Open("warningIntersection.json")
+	if err != nil {
+		fmt.Println("ファイルオープンエラー:", err)
+		return
+	}
+
+	decoder := json.NewDecoder(warningIntersectionFile)
+	if err := decoder.Decode(&worningIntersectionPoints); err != nil {
+		fmt.Println("JSONデコードエラー:", err)
+		return
+	}
+	defer warningIntersectionFile.Close()
 }
