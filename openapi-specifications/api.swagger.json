@@ -201,19 +201,22 @@
     "components": {
         "schemas": {
             "main.DirectionsResponse": {
+                "description": "OpenRouteServiceのGeoJSONレスポンスに加え、警告地点(WarningPoints)と快適度スコア(ComfortScore)を含む",
                 "type": "object",
                 "properties": {
                     "bbox": {
+                        "description": "Bounding box",
                         "type": "array",
                         "items": {
                             "type": "number"
                         }
                     },
                     "comfort_score": {
-                        "description": "XXX 追加項目, 0-100のスコア",
+                        "description": "追加: 快適度スコア(0-100)",
                         "type": "integer"
                     },
                     "features": {
+                        "description": "Route features",
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/main.ORSFeature"
@@ -227,14 +230,19 @@
                         }
                     },
                     "metadata": {
-                        "$ref": "#/components/schemas/main.ORSMetadata"
+                        "description": "Metadata",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/main.ORSMetadata"
+                            }
+                        ]
                     },
                     "type": {
-                        "description": "https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get\nのレスポンスを構造体に",
+                        "description": "GeoJSON type",
                         "type": "string"
                     },
                     "warning_points": {
-                        "description": "XXX 追加項目",
+                        "description": "追加: 警告地点",
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/main.WarningPoint"

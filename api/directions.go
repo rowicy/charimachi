@@ -15,6 +15,8 @@ import (
 )
 
 // =================レスポンス=================
+// DirectionsResponse represents the GeoJSON response for directions
+// @Description OpenRouteServiceのGeoJSONレスポンスに加え、警告地点(WarningPoints)と快適度スコア(ComfortScore)を含む
 type DirectionsResponse struct {
 	// https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get
 	// のレスポンスを構造体に
