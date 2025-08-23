@@ -16,6 +16,7 @@ import Search from "@/components/search";
 import Mode from "@/components/mode";
 import { Text } from "@/components/ui/text";
 import { Link, LinkText } from "@/components/ui/link";
+import Score from "@/components/score";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
@@ -64,7 +65,7 @@ export default function MapsScreen() {
     );
 
   const handleDestinationSelect = useCallback(
-    (destination: components["schemas"]["main.SearchResponse"]) => {
+    (destination: components["schemas"]["main.DirectionsResponse"]) => {
       setDestination(destination);
       setOpenSearch(false);
     },
@@ -245,6 +246,11 @@ export default function MapsScreen() {
               />
             )}
           </MapView>
+
+          {/* NOTE: スコア */}
+          {directions?.comfort_score && (
+            <Score score={directions?.comfort_score} />
+          )}
 
           <Box className="absolute bottom-28 left-1/2 -translate-x-1/2 w-[90vw] flex items-end flex-col">
             {/* NOTE: モード選択 */}
