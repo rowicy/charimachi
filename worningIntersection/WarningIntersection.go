@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
 	util "template-mobile-app-api/util"
 )
 
-type WorningIntersectionResponse struct {
+type WarningIntersectionResponse struct {
 	Total    int      `json:"total"`    // 総件数
 	Subtotal int      `json:"subtotal"` // サブ合計
 	Limit    int      `json:"limit"`    // 1ページあたりの件数
@@ -85,7 +86,7 @@ func main() {
 	}
 
 	worningIntersectionPoints := []util.WarningPoint{}
-	worningIntersectionResponse := WorningIntersectionResponse{}
+	worningIntersectionResponse := WarningIntersectionResponse{}
 	json.Unmarshal(body, &worningIntersectionResponse)
 	for i, v := range worningIntersectionResponse.Hits {
 		//取締り強化交差点データのLocationには「〇〇付近」とあり、検索の邪魔なので消す。
@@ -103,9 +104,19 @@ func main() {
 			worningIntersectionPoints[i].Coordinate = []float64{lon, lat}
 			worningIntersectionPoints[i].Name = v.Location
 			worningIntersectionPoints[i].Message = v.Reason
-
 		}
 	}
-
 	defer resp.Body.Close()
+
+	outputJsonData, err := json.MarshalIndent(worningIntersectionPoints, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = os.WriteFile("warningIntersection.json", outputJsonData, 0644)
+	if err != nil {
+		fmt.Println("ファイル書き込みエラー:", err)
+		return
+	}
 }
