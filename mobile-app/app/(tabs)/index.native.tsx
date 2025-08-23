@@ -7,16 +7,18 @@ import React, {
 } from "react";
 import { StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 // @ts-ignore - react-native-maps has TypeScript compatibility issues with strict mode
-import MapView, { UrlTile, Marker, Polyline } from "react-native-maps";
+import MapView, { UrlTile, Polyline } from "react-native-maps";
 import { useCurrentLocation } from "@/hooks/use-location";
 import { $api } from "@/api-client/api";
 import { Box } from "@/components/ui/box";
 import type { components } from "@/schema/api";
 import Search from "@/components/search";
-import Mode from "@/components/mode";
 import { Text } from "@/components/ui/text";
 import { Link, LinkText } from "@/components/ui/link";
 import Score from "@/components/score";
+import Result from "@/components/result";
+import Mode from "@/components/mode";
+import Marker from "@/components/marker";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
@@ -25,7 +27,7 @@ export default function MapsScreen() {
   const [keyword, setKeyword] = useState("");
   const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
   const [destination, setDestination] = useState<
-    components["schemas"]["main.SearchResponse"] | null
+    components["schemas"]["util.SearchResponse"] | null
   >(null);
   const [modes, setModes] = useState<string[]>([]);
 
@@ -65,7 +67,7 @@ export default function MapsScreen() {
     );
 
   const handleDestinationSelect = useCallback(
-    (destination: components["schemas"]["main.DirectionsResponse"]) => {
+    (destination: components["schemas"]["util.DirectionsResponse"]) => {
       setDestination(destination);
       setOpenSearch(false);
     },
@@ -124,12 +126,52 @@ export default function MapsScreen() {
     return [];
   }, [currentLocation, directions?.features]);
 
-  const durationMinutes = useMemo(() => {
+  const distance = useMemo(() => {
+    // NOTE: 1000m以上の場合はkmで返す
+    if (directions?.features?.[0]?.properties?.summary?.distance) {
+      if (directions.features[0].properties.summary.distance >= 1000) {
+        return {
+          value: Number(
+            (directions.features[0].properties.summary.distance / 1000).toFixed(
+              1,
+            ),
+          ),
+          unit: "km",
+        };
+      }
+      // NOTE: 1000m未満の場合はmで返す
+      return {
+        value: Math.round(directions.features[0].properties.summary.distance),
+        unit: "m",
+      };
+    }
+  }, [directions?.features]);
+
+  const duration = useMemo(() => {
     if (directions?.features?.[0]?.properties?.summary?.duration) {
-      return Math.ceil(directions.features[0].properties.summary.duration / 60);
+      // NOTE: 60分(3600秒)未満の場合は分で返す
+      if (directions.features[0].properties.summary.duration < 3600) {
+        return {
+          value: Math.ceil(
+            directions.features[0].properties.summary.duration / 60,
+          ),
+          unit: "分",
+        };
+      }
+
+      // NOTE: n.n時間
+      return {
+        value: Math.ceil(
+          directions.features[0].properties.summary.duration / 3600,
+        ),
+        unit: "時間",
+      };
     }
 
-    return 0;
+    return {
+      value: 0,
+      unit: "分",
+    };
   }, [directions]);
 
   useEffect(() => {
@@ -178,6 +220,10 @@ export default function MapsScreen() {
     }
   }, [destination, currentLocation]);
 
+  // NOTE: 重点取締場所一覧取得
+  const { data: warningPoints, isLoading: isLoadingWarningPoints } =
+    $api.useQuery("get", "/warning_point");
+
   return (
     <Box className="flex-1 min-h-full flex items-center justify-center relative">
       {isLoading ? (
@@ -200,14 +246,14 @@ export default function MapsScreen() {
             // NOTE: 現在地が取得できている場合のみinitialRegionを設定
             {...(initialRegion && { initialRegion })}
           >
-            {/* OpenStreetMap tile layer */}
+            {/* NOTE: OpenStreetMap tile */}
             <UrlTile
               urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
               maximumZ={19}
               minimumZ={1}
             />
 
-            {/* Current location marker - only show if location is available */}
+            {/* NOTE: 現在地 */}
             {currentLocation && (
               <Marker
                 coordinate={{
@@ -216,11 +262,11 @@ export default function MapsScreen() {
                 }}
                 title="現在地"
                 description="Your current location"
-                pinColor="orange"
+                type="START"
               />
             )}
 
-            {/* 目的地 */}
+            {/* NOTE: 目的地 */}
             {destination?.display_name &&
               destination?.lat &&
               destination?.lon && (
@@ -231,11 +277,11 @@ export default function MapsScreen() {
                   }}
                   title={destination?.display_name}
                   description="目的地"
-                  pinColor="red"
+                  type="GOAL"
                 />
               )}
 
-            {/* 経路 */}
+            {/* NOTE: 経路 */}
             {routeCoordinates && (
               <Polyline
                 coordinates={routeCoordinates}
@@ -245,6 +291,29 @@ export default function MapsScreen() {
                 lineJoin="round"
               />
             )}
+            {/* NOTE: 注位置点にマーカーを表示 */}
+            {!isLoadingWarningPoints &&
+              warningPoints?.map((point, i) => {
+                if (
+                  !point.coordinate ||
+                  !point.coordinate?.[0] ||
+                  !point.coordinate?.[1]
+                )
+                  return null;
+
+                return (
+                  <Marker
+                    key={i}
+                    coordinate={{
+                      latitude: point.coordinate?.[1],
+                      longitude: point.coordinate?.[0],
+                    }}
+                    title={point.name}
+                    description={point.message}
+                    type="WARNING"
+                  />
+                );
+              })}
           </MapView>
 
           {/* NOTE: スコア */}
@@ -252,27 +321,29 @@ export default function MapsScreen() {
             <Score score={directions?.comfort_score} />
           )}
 
-          <Box className="absolute bottom-28 left-1/2 -translate-x-1/2 w-[90vw] flex items-end flex-col">
-            {/* NOTE: モード選択 */}
-            <Mode
+          <Box className="absolute bottom-32 left-1/2 -translate-x-1/2 w-[90vw] flex items-start flex-col">
+            <Result
+              distance={distance}
+              duration={duration}
               loading={isLoading || isLoadingDirections}
-              distance={
-                directions?.features?.[0]?.properties?.summary?.distance
-              }
-              duration={durationMinutes}
-              modes={modes}
-              setModes={setModes}
-              error={!!destination && isErrorDirections}
+              error={isErrorDirections}
               destination={!!destination}
             />
 
-            <Box className="flex flex-row items-center justify-center p-1 text-gray-500 bg-white/80 text-center mt-1">
-              <Text className="text-sm">&copy;&nbsp;</Text>
+            <Box className="flex flex-row items-center justify-center p-1 bg-white/80 text-center mt-1">
+              <Text className="text-sm text-gray-500">&copy;&nbsp;</Text>
               <Link href="https://www.openstreetmap.org/copyright">
                 <LinkText size="sm">OpenStreetMap contributors</LinkText>
               </Link>
             </Box>
           </Box>
+
+          {/* NOTE: モード切り替え */}
+          <Mode
+            loading={isLoadingDirections}
+            modes={modes}
+            setModes={setModes}
+          />
         </>
       )}
     </Box>
