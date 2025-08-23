@@ -1,6 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -8,6 +12,8 @@ import (
 	_ "template-mobile-app-api/docs"
 
 	"github.com/joho/godotenv"
+
+	util "template-mobile-app-api/util"
 )
 
 // @title Template Mobile App API
@@ -16,13 +22,9 @@ import (
 // @host localhost:8080
 // @BasePath /api/v1
 
-// ErrorResponse represents an error response
-type ErrorResponse struct {
-	Error   string `json:"error" example:"Internal server error"`
-	Message string `json:"message" example:"Failed to fetch data"`
-}
-
 func main() {
+	loadWarningIntersection()
+
 	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
@@ -53,13 +55,30 @@ func main() {
 	{
 		v1.GET("/health", getHealth)
 		// 経路検索
-		v1.GET("/directions/bicycle", getDirections)
+		v1.GET("/directions/bicycle", util.GetDirections)
 		// 目的地検索
-		v1.GET("/search", getSearch)
+		v1.GET("/search", util.GetSearch)
+		//注意点
+		v1.GET("/warning_point", util.GetWarningPoints)
+		//違反率
+		v1.GET("/violation_rates", util.GetViolationRates)
 	}
 
-	//CashWorningIntersection()
-
 	// Start server on port 8080
-	r.Run(":8080")
+	r.Run("0.0.0.0:8080")
+}
+
+func loadWarningIntersection() {
+	warningIntersectionFile, err := os.Open("warningIntersection.json")
+	if err != nil {
+		fmt.Println("ファイルオープンエラー:", err)
+		return
+	}
+
+	decoder := json.NewDecoder(warningIntersectionFile)
+	if err := decoder.Decode(&util.WorningIntersectionPoints); err != nil {
+		fmt.Println("JSONデコードエラー:", err)
+		return
+	}
+	defer warningIntersectionFile.Close()
 }

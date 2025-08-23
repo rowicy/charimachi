@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"encoding/json"
@@ -43,13 +43,13 @@ type SearchResponse struct {
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /search [get]
-func getSearch(c *gin.Context) {
+func GetSearch(c *gin.Context) {
 	//Client inputを取得 パラメータ: q
 	//https://nominatim.openstreetmap.org/search?q={Client input}&accept-language=ja&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
 	query := c.Query("q")
 
-	resp := getSearchBase(query)
+	resp := GetSearchBase(query)
 
 	if _, ok := resp.([]SearchResponse); ok {
 		c.JSON(http.StatusOK, resp)
@@ -58,7 +58,7 @@ func getSearch(c *gin.Context) {
 	}
 }
 
-func getSearchBase(query string) (res any) {
+func GetSearchBase(query string) (res any) {
 	//Client inputを取得 パラメータ: q
 	//https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
