@@ -8,6 +8,8 @@ import (
 	_ "template-mobile-app-api/docs"
 
 	"github.com/joho/godotenv"
+
+	util "template-mobile-app-api/util"
 )
 
 // @title Template Mobile App API
@@ -15,12 +17,6 @@ import (
 // @description This is a template API server using Go Gin framework
 // @host localhost:8080
 // @BasePath /api/v1
-
-// ErrorResponse represents an error response
-type ErrorResponse struct {
-	Error   string `json:"error" example:"Internal server error"`
-	Message string `json:"message" example:"Failed to fetch data"`
-}
 
 func main() {
 	// Load environment variables from .env file
@@ -53,12 +49,10 @@ func main() {
 	{
 		v1.GET("/health", getHealth)
 		// 経路検索
-		v1.GET("/directions/bicycle", getDirections)
+		v1.GET("/directions/bicycle", util.GetDirections)
 		// 目的地検索
-		v1.GET("/search", getSearch)
+		v1.GET("/search", util.GetSearch)
 	}
-
-	//CashWorningIntersection()
 
 	// Start server on port 8080
 	r.Run(":8080")
