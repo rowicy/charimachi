@@ -27,7 +27,7 @@ export default function MapsScreen() {
   const [keyword, setKeyword] = useState("");
   const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
   const [destination, setDestination] = useState<
-    components["schemas"]["main.SearchResponse"] | null
+    components["schemas"]["util.SearchResponse"] | null
   >(null);
   const [modes, setModes] = useState<string[]>([]);
 
@@ -67,7 +67,7 @@ export default function MapsScreen() {
     );
 
   const handleDestinationSelect = useCallback(
-    (destination: components["schemas"]["main.DirectionsResponse"]) => {
+    (destination: components["schemas"]["util.DirectionsResponse"]) => {
       setDestination(destination);
       setOpenSearch(false);
     },
@@ -220,6 +220,10 @@ export default function MapsScreen() {
     }
   }, [destination, currentLocation]);
 
+  // NOTE: 重点取締場所一覧取得
+  const { data: warningPoints, isLoading: isLoadingWarningPoints } =
+    $api.useQuery("get", "/warning_point");
+
   return (
     <Box className="flex-1 min-h-full flex items-center justify-center relative">
       {isLoading ? (
@@ -288,27 +292,28 @@ export default function MapsScreen() {
               />
             )}
             {/* NOTE: 注位置点にマーカーを表示 */}
-            {directions?.warning_points?.map((point) => {
-              if (
-                !point.coordinate ||
-                !point.coordinate?.[0] ||
-                !point.coordinate?.[1]
-              )
-                return null;
+            {!isLoadingWarningPoints &&
+              warningPoints?.map((point, i) => {
+                if (
+                  !point.coordinate ||
+                  !point.coordinate?.[0] ||
+                  !point.coordinate?.[1]
+                )
+                  return null;
 
-              return (
-                <Marker
-                  key={point.name}
-                  coordinate={{
-                    latitude: point.coordinate?.[1],
-                    longitude: point.coordinate?.[0],
-                  }}
-                  title={point.name}
-                  description={point.message}
-                  type="WARNING"
-                />
-              );
-            })}
+                return (
+                  <Marker
+                    key={i}
+                    coordinate={{
+                      latitude: point.coordinate?.[1],
+                      longitude: point.coordinate?.[0],
+                    }}
+                    title={point.name}
+                    description={point.message}
+                    type="WARNING"
+                  />
+                );
+              })}
           </MapView>
 
           {/* NOTE: スコア */}

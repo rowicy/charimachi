@@ -229,6 +229,30 @@
                     }
                 }
             }
+        },
+        "/warning_point": {
+            "get": {
+                "description": "取締強化交差点などの注意点をまとめて返す。",
+                "tags": [
+                    "map"
+                ],
+                "summary": "注意点取得",
+                "responses": {
+                    "200": {
+                        "description": "注意地点情報",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/util.WarningPoint"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "servers": [
