@@ -13,8 +13,8 @@ export interface SearchProps {
   setKeyword: (keyword: string) => void;
   open: boolean;
   loading: boolean;
-  destinations?: components["schemas"]["main.SearchResponse"][];
-  onSelect: (destination: components["schemas"]["main.SearchResponse"]) => void;
+  destinations?: components["schemas"]["util.SearchResponse"][];
+  onSelect: (destination: components["schemas"]["util.SearchResponse"]) => void;
 }
 
 export default function Search({
