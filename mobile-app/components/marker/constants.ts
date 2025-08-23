@@ -16,4 +16,9 @@ export const MARKER_TYPE = {
     color: "red",
     icon: AlertCircleIcon,
   },
+  VIOLATION: {
+    label: "違反が多い地点",
+    color: "orange",
+    icon: AlertCircleIcon,
+  },
 };

@@ -224,6 +224,23 @@ export default function MapsScreen() {
   const { data: warningPoints, isLoading: isLoadingWarningPoints } =
     $api.useQuery("get", "/warning_point");
 
+  // NOTE: 違反箇所の交差点取得
+  const { data: violationRates, isLoading: isLoadingViolationRates } =
+    $api.useQuery(
+      "get",
+      "/violation_rates",
+      {
+        params: {
+          query: {
+            session_id: directions?.session_id || "",
+          },
+        },
+      },
+      {
+        enabled: !!directions?.session_id,
+      },
+    );
+
   return (
     <Box className="flex-1 min-h-full flex items-center justify-center relative">
       {isLoading ? (
@@ -252,6 +269,51 @@ export default function MapsScreen() {
               maximumZ={19}
               minimumZ={1}
             />
+
+            {/* NOTE: 注位置点にマーカーを表示 */}
+            {!isLoadingWarningPoints &&
+              warningPoints?.map((point, i) => {
+                if (
+                  !point.coordinate ||
+                  !point.coordinate?.[0] ||
+                  !point.coordinate?.[1]
+                )
+                  return null;
+
+                return (
+                  <Marker
+                    key={i}
+                    coordinate={{
+                      latitude: point.coordinate?.[1],
+                      longitude: point.coordinate?.[0],
+                    }}
+                    title={point.name}
+                    description={point.message}
+                    type="WARNING"
+                  />
+                );
+              })}
+
+            {/* NOTE: 違反箇所のマーカーを表示 */}
+            {!isLoadingViolationRates &&
+              Object.entries(violationRates?.[0] || {}).map(([key, item]) => {
+                if (!item.coordinate?.[0] || !item.coordinate?.[1]) return null;
+
+                return (
+                  <Marker
+                    key={key}
+                    coordinate={{
+                      latitude: item.coordinate?.[1],
+                      longitude: item.coordinate?.[0],
+                    }}
+                    title={item.message}
+                    description={item.message}
+                    type="VIOLATION"
+                    count={item.violation_count}
+                    rate={item.violation_rate}
+                  />
+                );
+              })}
 
             {/* NOTE: 現在地 */}
             {currentLocation && (
@@ -285,35 +347,12 @@ export default function MapsScreen() {
             {routeCoordinates && (
               <Polyline
                 coordinates={routeCoordinates}
-                strokeColor="#FF6B6B"
+                strokeColor="#0000FF"
                 strokeWidth={3}
                 lineCap="round"
                 lineJoin="round"
               />
             )}
-            {/* NOTE: 注位置点にマーカーを表示 */}
-            {!isLoadingWarningPoints &&
-              warningPoints?.map((point, i) => {
-                if (
-                  !point.coordinate ||
-                  !point.coordinate?.[0] ||
-                  !point.coordinate?.[1]
-                )
-                  return null;
-
-                return (
-                  <Marker
-                    key={i}
-                    coordinate={{
-                      latitude: point.coordinate?.[1],
-                      longitude: point.coordinate?.[0],
-                    }}
-                    title={point.name}
-                    description={point.message}
-                    type="WARNING"
-                  />
-                );
-              })}
           </MapView>
 
           {/* NOTE: スコア */}
