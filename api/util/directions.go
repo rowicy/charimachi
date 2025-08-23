@@ -213,13 +213,58 @@ func GetDirections(c *gin.Context) {
 	viaBikeParking := c.DefaultQuery("via_bike_parking", "false")
 	avoidBusStops := c.DefaultQuery("avoid_bus_stops", "false")
 	avoidTrafficLights := c.DefaultQuery("avoid_traffic_lights", "false")
+
+	status, orsResp := GetDirectionsBase(start, end, viaBikeParking, avoidBusStops, avoidTrafficLights)
+
+	// features := []ORSFeature{}
+	// for _, v := range orsResp.Features {
+	// 	v.Geometry.Coordinates[0]
+	// 	v.Geometry.Coordinates[1]
+	// 	searchResp := util.GetSearchBase(Location)
+	// }
+
+	//[bicycle_parking]&viewbox=139.69978,35.68982,139.70022,35.69018
+
+	if directionsResponse, ok := orsResp.(DirectionsResponse); ok {
+		//TODO ComfortScoreはサンプル
+		directionsResponse.ComfortScore = 49 // https://github.com/rowicy/charimachi/issues/34
+		var comfortLevel = 0
+		if viaBikeParking == "true" {
+			comfortLevel++
+		}
+		if avoidBusStops == "true" {
+			comfortLevel++
+		}
+		if avoidTrafficLights == "true" {
+			comfortLevel++
+		}
+		switch comfortLevel {
+		case 1:
+			directionsResponse.ComfortScore = 79
+		case 2:
+			directionsResponse.ComfortScore = 89
+		case 3:
+			directionsResponse.ComfortScore = 100
+		}
+		directionsResponse.SessoinID = GenerateSessionID()
+		SessionIDResponse[directionsResponse.SessoinID] = directionsResponse.Features[0].Geometry
+	}
+	c.JSON(status, orsResp)
+}
+
+func GetDirectionsBase(
+	start string,
+	end string,
+	viaBikeParking string,
+	avoidBusStops string,
+	avoidTrafficLights string) (status int, res any) {
+
 	// バリデーション
 	if start == "" || end == "" {
 		var er ORSErrorResponse
 		er.Error.Code = http.StatusBadRequest
 		er.Error.Message = "start and end query parameters are required"
-		c.JSON(http.StatusBadRequest, er)
-		return
+		return http.StatusBadRequest, er
 	}
 
 	// APIキー取得
@@ -228,8 +273,7 @@ func GetDirections(c *gin.Context) {
 		var er ORSErrorResponse
 		er.Error.Code = http.StatusInternalServerError
 		er.Error.Message = "OPEN_ROUTE_SERVICE_API_KEY is not set"
-		c.JSON(http.StatusInternalServerError, er)
-		return
+		return http.StatusInternalServerError, er
 	}
 
 	// ORSへリクエスト
@@ -239,8 +283,7 @@ func GetDirections(c *gin.Context) {
 		var er ORSErrorResponse
 		er.Error.Code = http.StatusInternalServerError
 		er.Error.Message = fmt.Sprintf("invalid base url: %v", err)
-		c.JSON(http.StatusInternalServerError, er)
-		return
+		return http.StatusInternalServerError, er
 	}
 
 	q := u.Query()
@@ -255,8 +298,7 @@ func GetDirections(c *gin.Context) {
 		var er ORSErrorResponse
 		er.Error.Code = http.StatusBadGateway
 		er.Error.Message = err.Error()
-		c.JSON(http.StatusBadGateway, er)
-		return
+		return http.StatusBadGateway, er
 	}
 	defer resp.Body.Close()
 
@@ -265,8 +307,7 @@ func GetDirections(c *gin.Context) {
 		var er ORSErrorResponse
 		er.Error.Code = http.StatusBadGateway
 		er.Error.Message = fmt.Sprintf("failed to read upstream response: %v", err)
-		c.JSON(http.StatusBadGateway, er)
-		return
+		return http.StatusBadGateway, er
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -276,8 +317,7 @@ func GetDirections(c *gin.Context) {
 			upstreamErr.Error.Code = resp.StatusCode
 			upstreamErr.Error.Message = fmt.Sprintf("upstream returned status %d", resp.StatusCode)
 		}
-		c.JSON(http.StatusBadGateway, upstreamErr)
-		return
+		return http.StatusBadGateway, upstreamErr
 	}
 
 	//TODO OpenRouteServiceのレスポンスをそのままレスポンスにパースしているのでorsRespを加工する処理をかく
@@ -286,8 +326,7 @@ func GetDirections(c *gin.Context) {
 		var er ORSErrorResponse
 		er.Error.Code = http.StatusInternalServerError
 		er.Error.Message = fmt.Sprintf("failed to parse upstream response: %v", err)
-		c.JSON(http.StatusInternalServerError, er)
-		return
+		return http.StatusInternalServerError, er
 	}
 
 	//TODO WarningPointsはサンプル
@@ -309,28 +348,5 @@ func GetDirections(c *gin.Context) {
 	// 	}
 	// }
 
-	//TODO ComfortScoreはサンプル
-	orsResp.ComfortScore = 49 // https://github.com/rowicy/charimachi/issues/34
-	var comfortLevel = 0
-	if viaBikeParking == "true" {
-		comfortLevel++
-	}
-	if avoidBusStops == "true" {
-		comfortLevel++
-	}
-	if avoidTrafficLights == "true" {
-		comfortLevel++
-	}
-	switch comfortLevel {
-	case 1:
-		orsResp.ComfortScore = 79
-	case 2:
-		orsResp.ComfortScore = 89
-	case 3:
-		orsResp.ComfortScore = 100
-	}
-	orsResp.SessoinID = GenerateSessionID()
-	SessionIDResponse[orsResp.SessoinID] = orsResp.Features[0].Geometry
-
-	c.JSON(http.StatusOK, orsResp)
+	return http.StatusOK, orsResp
 }
