@@ -120,19 +120,22 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-participant OSM as OpenStreetMap
+    participant OSM as OpenStreetMap
     participant Client as クライアントアプリ (Expo)
     participant Go as Goサーバー
     participant ORS as OpenRouteService
-    
+    participant OD as OpenData
 
     Client->>Go: 経路リクエスト
     Go->>ORS: 経路探索リクエスト
-    Client->>OSM: 地図データ参照
-    OSM-->>Client: 地図データ返却
-    ORS-->>Go: 経路データ返却
-    Go-->>Client: 整形済みデータ返却
-    Client->>Client: 経路描画
+    Client->>OSM: 地図データ取得
+    OSM->>Client: 
+    ORS->>Go: 経路データ返却
+    Go ->> OD: データ取得
+    OD ->>Go: 
+    Go -->> Go: ルート変更・レスポンス情報追加
+    Go->>Client: 経路・メタデータ返却
+    Client-->>Client: 経路・ポイント描画
 ```
 
 ---
