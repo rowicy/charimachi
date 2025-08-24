@@ -3,7 +3,8 @@
 ![CHARIMACHI](./screenshot/thumbnail.png)
 
 <p style="text-align: center;">
-  <img src="./screenshot/marker.png" alt="注位置点表示" width="200" />
+  <img src="./screenshot/warning-point.png" alt="注位置点表示" width="200" />
+  <img src="./screenshot/violation.png" alt="違反率注意" width="200" />
   <img src="./screenshot/score.png" alt="快適度" width="200" />
 </p>
 

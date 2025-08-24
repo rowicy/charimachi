@@ -4,4 +4,4 @@ export const EXAMPLE_API_BASE_URL = "http://localhost:3001";
 // Prism Mock Server: "http://localhost:8080"
 // Go Server にスマホ実機で接続する場合は、PCのローカルIPアドレスを指定する
 // ifconfig > en0 > inet を確認
-export const API_BASE_URL = "http://localhost:8080/api/v1";
+export const API_BASE_URL = "http://192.168.11.6:8080/api/v1";
