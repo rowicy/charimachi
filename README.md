@@ -2,6 +2,8 @@
 
 ![CHARIMACHI](./screenshot/thumbnail.png)
 
+<video src="./screenshot/demo.mp4" controls="true" width="600"></video>
+
 <p style="text-align: center;">
   <img src="./mobile-app/assets/images/icon.png" alt="icon" width="200" />
 </p>
