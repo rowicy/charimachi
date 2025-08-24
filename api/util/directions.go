@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -214,18 +216,11 @@ func GetDirections(c *gin.Context) {
 	avoidBusStops := c.DefaultQuery("avoid_bus_stops", "false")
 	avoidTrafficLights := c.DefaultQuery("avoid_traffic_lights", "false")
 
-	status, orsResp := GetDirectionsBase(start, end, viaBikeParking, avoidBusStops, avoidTrafficLights)
+	status, orsResp := GetDirectionsBase(start, end)
+	directionsResponse, ok := orsResp.(DirectionsResponse)
+	if ok {
+		//directionsResponse.Features[0].Geometry.Coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, [][]float64{})
 
-	// features := []ORSFeature{}
-	// for _, v := range orsResp.Features {
-	// 	v.Geometry.Coordinates[0]
-	// 	v.Geometry.Coordinates[1]
-	// 	searchResp := util.GetSearchBase(Location)
-	// }
-
-	//[bicycle_parking]&viewbox=139.69978,35.68982,139.70022,35.69018
-
-	if directionsResponse, ok := orsResp.(DirectionsResponse); ok {
 		//TODO ComfortScoreはサンプル
 		directionsResponse.ComfortScore = 49 // https://github.com/rowicy/charimachi/issues/34
 		var comfortLevel = 0
@@ -249,15 +244,67 @@ func GetDirections(c *gin.Context) {
 		directionsResponse.SessoinID = GenerateSessionID()
 		SessionIDResponse[directionsResponse.SessoinID] = directionsResponse.Features[0].Geometry
 	}
-	c.JSON(status, orsResp)
+	if avoidBusStops == "true" && ok {
+		var geometry, err = AvoidBusStops(Coordinate{directionsResponse.Metadata.Query.Coordinates[0][0], directionsResponse.Metadata.Query.Coordinates[0][1]}, Coordinate{directionsResponse.Metadata.Query.Coordinates[1][0], directionsResponse.Metadata.Query.Coordinates[1][1]})
+		if err == nil {
+			fmt.Println("AvoidBusStops success")
+			directionsResponse.Features[0].Geometry = geometry
+		} else {
+			fmt.Println("AvoidBusStops error:", err)
+		}
+	}
+	c.JSON(status, directionsResponse)
+}
+
+func GetBicycleParkingDirection(searchCoordinates [][]float64, coordinates [][]float64) (returnCoordinates [][]float64) {
+	var distance = 0.0
+	var prePosition = searchCoordinates[0]
+	for _, v := range searchCoordinates {
+		const metersPerDegree = 111320.0 // 緯度1度あたりのメートル
+		var lon = prePosition[0] - v[0]
+		var lat = prePosition[1] - v[1]
+		distance += math.Abs(lon) * metersPerDegree
+		distance += math.Abs(lat) * metersPerDegree
+
+		prePosition = v
+		fmt.Println("distance:", distance)
+
+		var query = "駐輪場"
+		var query2 = "&viewbox="
+		query2 += strconv.FormatFloat(v[0]-0.011, 'f', -1, 64)
+		query2 += ","
+		query2 += strconv.FormatFloat(v[1]-0.011, 'f', -1, 64)
+		query2 += ","
+		query2 += strconv.FormatFloat(v[0]+0.011, 'f', -1, 64)
+		query2 += ","
+		query2 += strconv.FormatFloat(v[1]+0.011, 'f', -1, 64)
+		query2 += "&bounded=1"
+		searchResp := GetSearchBase(query, query2)
+		searchResponse, ok := searchResp.([]SearchResponse)
+
+		fmt.Println(searchResponse)
+
+		if ok && (distance > 500) && len(searchResponse) != 0 {
+			_, orsResp := GetDirectionsBase(
+				searchResponse[0].Lon+","+searchResponse[0].Lat,
+				strconv.FormatFloat(searchCoordinates[len(searchCoordinates)-1][0], 'f', -1, 64)+","+strconv.FormatFloat(searchCoordinates[len(searchCoordinates)-1][1], 'f', -1, 64))
+			directionsResponse, directionOK := orsResp.(DirectionsResponse)
+			if directionOK {
+				coordinates = append(coordinates, v)
+				coordinates = GetBicycleParkingDirection(directionsResponse.Features[0].Geometry.Coordinates, coordinates)
+				return coordinates
+			}
+		} else {
+			coordinates = append(coordinates, v)
+		}
+	}
+
+	return coordinates
 }
 
 func GetDirectionsBase(
 	start string,
-	end string,
-	viaBikeParking string,
-	avoidBusStops string,
-	avoidTrafficLights string) (status int, res any) {
+	end string) (status int, res any) {
 
 	// バリデーション
 	if start == "" || end == "" {

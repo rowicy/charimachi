@@ -49,7 +49,7 @@ func GetSearch(c *gin.Context) {
 	//nominatimレスポンスをそのまま返す
 	query := c.Query("q")
 
-	resp := GetSearchBase(query)
+	resp := GetSearchBase(query, "")
 
 	if _, ok := resp.([]SearchResponse); ok {
 		c.JSON(http.StatusOK, resp)
@@ -58,12 +58,12 @@ func GetSearch(c *gin.Context) {
 	}
 }
 
-func GetSearchBase(query string) (res any) {
+func GetSearchBase(query string, query2 string) (res any) {
 	//Client inputを取得 パラメータ: q
 	//https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5
 	//nominatimレスポンスをそのまま返す
 	encodedQuery := url.QueryEscape(query)
-	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + encodedQuery + "&accept-language=ja&format=json&limit=5")
+	resp, err := http.Get("https://nominatim.openstreetmap.org/search?q=" + encodedQuery + query2 + "&accept-language=ja&format=json&limit=5")
 
 	if err != nil {
 		response := ErrorResponse{
