@@ -181,6 +181,15 @@ For [api](./api) and [mobile-app](./mobile-app) directories, add settings for ea
 
 ## Clone
 
-```
+```bash
 git clone --recurse-submodules https://github.com/rowicy/charimachi.git
+```
+
+## Run on debug mode
+```bash
+make run_api_dev
+```
+
+```bash
+make run_mobile_app
 ```
