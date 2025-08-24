@@ -151,3 +151,9 @@ This script will:
 This is a configuration file for [ls-lint](https://ls-lint.org/), a linter for directory structures.  
 GitHub Actions are set up to run ls-lint on pull requests to ensure that the directory structure adheres to the defined rules.  
 For [api](./api) and [mobile-app](./mobile-app) directories, add settings for each directory, as they are ignored except for markdown files.
+
+## Clone
+
+```
+git clone --recurse-submodules https://github.com/rowicy/charimachi.git
+```
