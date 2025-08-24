@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ChariMachi",
-    "slug": "ChariMachi",
+    "name": "CHARIMACHI",
+    "slug": "CHARIMACHI",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "ChariMachi",
+    "scheme": "CHARIMACHI",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

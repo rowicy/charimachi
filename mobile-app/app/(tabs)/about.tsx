@@ -12,19 +12,19 @@ export default function AboutScreen() {
     <SafeAreaView className="flex-1 bg-background-0">
       <ScrollView className="flex-1 p-4">
         <Heading size="2xl" className="mb-6 text-center text-typography-900">
-          ChariMachi
+          CHARIMACHI
         </Heading>
 
         <Center>
           <Image
             size="lg"
             source={require("@/assets/images/icon.png")}
-            alt="ChariMachiのロゴ"
+            alt="CHARIMACHIのロゴ"
           />
         </Center>
 
         <Description>
-          ChariMachiは、自転車の車道通行を目的とした適切なルート提案アプリです。
+          CHARIMACHIは、自転車の車道通行を目的とした適切なルート提案アプリです。
         </Description>
         <Description>
           このアプリは、ユーザーが自転車を安全かつ快適に利用できるよう、最適なルートを提案します。
