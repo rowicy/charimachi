@@ -244,6 +244,15 @@ func GetDirections(c *gin.Context) {
 		directionsResponse.SessoinID = GenerateSessionID()
 		SessionIDResponse[directionsResponse.SessoinID] = directionsResponse.Features[0].Geometry
 	}
+	if avoidBusStops == "true" && ok {
+		var geometry, err = AvoidBusStops(Coordinate{directionsResponse.Metadata.Query.Coordinates[0][0], directionsResponse.Metadata.Query.Coordinates[0][1]}, Coordinate{directionsResponse.Metadata.Query.Coordinates[1][0], directionsResponse.Metadata.Query.Coordinates[1][1]})
+		if err == nil {
+			fmt.Println("AvoidBusStops success")
+			directionsResponse.Features[0].Geometry = geometry
+		} else {
+			fmt.Println("AvoidBusStops error:", err)
+		}
+	}
 	c.JSON(status, directionsResponse)
 }
 
