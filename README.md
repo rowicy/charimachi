@@ -43,18 +43,16 @@
 - 出発地・到着地の候補検索
 - ルート描画
   - 自転車専用帯優先
-  - 信号まち回避
-  - 混雑車道回避
+  - 駐輪所経由モード(オープンデータ)
+  - バス停回避モード(オープンデータ)
   - 注意喚起
     - 取締強化交差点注意(オープンデータ)
-    - 事故が多い地点(今回実装を見送る可能性あり)
+    - 違反率別交差点注意(オープンデータ)
 - 経由地点表示
 - 所要時間表示
 - about画面・制作元・出典
-- (駐輪所経由モード)
-- (バス停回避モード)
 
-## 使うデータ
+## 使用オープンデータ・API
 
 ### 自転車専用帯優先
 
@@ -68,36 +66,27 @@
 
 - [交通量統計表](https://catalog.data.metro.tokyo.lg.jp/dataset/t000022d0000000035)
 
-    事前にファイル読み込み
-
-    - [（偶数年調査）主要交差点（区部）](https://catalog.data.metro.tokyo.lg.jp/dataset/t000022d0000000035/resource/b315688c-ac19-4b0d-b4be-de6414af7666)
-
-    - [（偶数年調査）主要交差点（多摩部）](https://catalog.data.metro.tokyo.lg.jp/dataset/t000022d0000000035/resource/ddaaa1ac-0d4a-4406-9e7c-f6d66aa74c55)
-
 - [Overpass API](https://overpass-api.de/api/interpreter)
 
-    交通量統計表の交差点ポイントを座標化
+### 駐輪所経由モード
 
+- [東京都オープンデータカタログ - 駐輪場情報](https://catalog.data.metro.tokyo.lg.jp/dataset?q=title%3A+%E9%A7%90%E8%BC%AA%E5%A0%B4&sort=score+desc%2C+metadata_modified+desc)
 
-### 信号まち回避
-
-- [OpenStreetMap](https://www.openstreetmap.org/) ?
-
-### 混雑車道回避
-
-- [警視庁 - 交差点区部統計データ](https://www.keishicho.metro.tokyo.lg.jp/about_mpd/jokyo_tokei/tokei_jokyo/ryo.files/02_kousatenkubu_csv.zip) ?
-- [国土交通省 - 道路統計データ](https://www.mlit.go.jp/road/ir/ir-data/ir-data.html) ?
-
-### （駐輪所経由モード）
-
-- [東京都オープンデータカタログ - 駐輪場情報](https://catalog.data.metro.tokyo.lg.jp/dataset?q=title%3A+%E9%A7%90%E8%BC%AA%E5%A0%B4&sort=score+desc%2C+metadata_modified+desc) ?
-
-### （バス停回避モード）
+### バス停回避モード
 
 - [公共交通オープンデータ - 都営バス停留所データ](https://ckan.odpt.org/dataset/b_busstop-toei/resource/f340278d-aefe-47ea-bc8f-15ebe48c286d)
-    
-    必要情報のみ抜き出し加工
-    CC BY 4.0(クレジット明示必要)
+
+
+### 表
+
+| データ/API名 | API提供 | 更新可能性 | 用途 | リンク |
+|--------------|--------|----------------|------|-------|
+| 自転車専用帯優先 (OpenRouteService) | yes | yes | ルート検索時呼び出し | [OpenRouteService](https://openrouteservice.org) |
+| 取締強化交差点注意 (東京都オープンデータカタログ - 交通規制情報) | yes | yes | 内部で加工データを保持 | [リンク](https://catalog.data.metro.tokyo.lg.jp/dataset/t000022d1700000024/resource/fb207998-df4c-434c-9280-1d7c2fbfdf1d) |
+| 違反率別注意交差点 (交通量統計表) | no | yes | 内部で加工データを保持,更新batch処理あり | [リンク](https://catalog.data.metro.tokyo.lg.jp/dataset/t000022d0000000035) |
+| Overpass API | yes | - | 内部データ加工用 | [Overpass API](https://overpass-api.de/api/interpreter) |
+| 駐輪所経由モード (東京都オープンデータカタログ - 駐輪場情報) | yes | yes | ルート検索時呼び出し | [リンク](https://catalog.data.metro.tokyo.lg.jp/dataset?q=title%3A+%E9%A7%90%E8%BC%AA%E5%A0%B4&sort=score+desc%2C+metadata_modified+desc) |
+| バス停回避モード (公共交通オープンデータ - 都営バス停留所データ) | yes | yes | 内部で加工データを保持 | [リンク](https://ckan.odpt.org/dataset/b_busstop-toei/resource/f340278d-aefe-47ea-bc8f-15ebe48c286d) |
 
 ## 構成図
 
@@ -121,19 +110,22 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-participant OSM as OpenStreetMap
+    participant OSM as OpenStreetMap
     participant Client as クライアントアプリ (Expo)
     participant Go as Goサーバー
     participant ORS as OpenRouteService
-    
+    participant OD as OpenData
 
     Client->>Go: 経路リクエスト
     Go->>ORS: 経路探索リクエスト
-    Client->>OSM: 地図データ参照
-    OSM-->>Client: 地図データ返却
-    ORS-->>Go: 経路データ返却
-    Go-->>Client: 整形済みデータ返却
-    Client->>Client: 経路描画
+    Client->>OSM: 地図データ取得
+    OSM->>Client: 
+    ORS->>Go: 経路データ返却
+    Go ->> OD: データ取得
+    OD ->>Go: 
+    Go -->> Go: ルート変更・レスポンス情報追加
+    Go->>Client: 経路・メタデータ返却
+    Client-->>Client: 経路・ポイント描画
 ```
 
 ---
@@ -182,6 +174,15 @@ For [api](./api) and [mobile-app](./mobile-app) directories, add settings for ea
 
 ## Clone
 
-```
+```bash
 git clone --recurse-submodules https://github.com/rowicy/charimachi.git
+```
+
+## Run on debug mode
+```bash
+make run_api_dev
+```
+
+```bash
+make run_mobile_app
 ```
