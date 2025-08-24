@@ -1,5 +1,7 @@
 # CHARIMACHI
 
+![CHARIMACHI](./screenshot/thumbnail.png)
+
 <p style="text-align: center;">
   <img src="./mobile-app/assets/images/icon.png" alt="icon" width="200" />
 </p>
