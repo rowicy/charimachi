@@ -1,6 +1,13 @@
-# ChariMachi
+# CHARIMACHI
 
-<img src="./mobile-app/assets/images/icon.png" alt="icon" width="200" />
+<p style="text-align: center;">
+  <img src="./mobile-app/assets/images/icon.png" alt="icon" width="200" />
+</p>
+
+<p style="text-align: center;">
+  <img src="./screenshot/marker.png" alt="注位置点表示" width="200" />
+  <img src="./screenshot/score.png" alt="快適度" width="200" />
+</p>
 
 ## 概要
 
