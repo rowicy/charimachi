@@ -18,4 +18,9 @@ export const DATA_LIST: Data[] = [
     label: `${openDataSiteName} - 交通量統計表`,
     link: "https://catalog.data.metro.tokyo.lg.jp/dataset/t000022d0000000035",
   },
+  {
+    label:
+      "東京都交通局・公共交通オープンデータ協議会 - バス停情報 / Bus stop information",
+    link: "https://ckan.odpt.org/dataset/b_busstop-toei/resource/f340278d-aefe-47ea-bc8f-15ebe48c286d",
+  },
 ];
