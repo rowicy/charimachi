@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "mobile-app",
-    "slug": "mobile-app",
+    "name": "CHARIMACHI",
+    "slug": "CHARIMACHI",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobileapp",
+    "scheme": "CHARIMACHI",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

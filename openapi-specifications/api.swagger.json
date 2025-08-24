@@ -1,237 +1,623 @@
 {
-    "openapi": "3.0.3",
+    "openapi": "3.0.0",
     "info": {
         "description": "This is a template API server using Go Gin framework",
         "title": "Template Mobile App API",
         "contact": {},
         "version": "1.0"
     },
-    "servers": [
-        {
-            "url": "http://localhost:8080/api/v1",
-            "description": "Development server"
-        }
-    ],
     "paths": {
-        "/health": {
+        "/directions/bicycle": {
             "get": {
-                "description": "Returns the health status of the API",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "additionalProperties": true,
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    }
-                },
-                "summary": "Health check endpoint",
+                "description": "出発地点と目的地の座標をクエリパラメータで受け取り、OpenRouteServiceのAPIを呼び出してルート情報を取得する",
                 "tags": [
-                    "health"
-                ]
-            }
-        },
-        "/posts": {
-            "get": {
-                "description": "Fetch all posts from JSONPlaceholder API and return formatted response",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "success": {
-                                        "value": [
-                                            {
-                                                "body": "Sample post body content",
-                                                "formattedAt": "2024-01-01T12:00:00Z",
-                                                "id": 1,
-                                                "title": "Sample Post Title",
-                                                "userId": 1
-                                            },
-                                            {
-                                                "body": "Another post body content",
-                                                "formattedAt": "2024-01-01T12:30:00Z",
-                                                "id": 2,
-                                                "title": "Another Post Title",
-                                                "userId": 2
-                                            }
-                                        ]
-                                    }
-                                },
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/PostResponse"
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "error": "Internal server error",
-                                            "message": "Failed to fetch data"
-                                        }
-                                    }
-                                },
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        },
-                        "description": "Internal Server Error"
-                    }
-                },
-                "summary": "Get all posts from JSONPlaceholder",
-                "tags": [
-                    "posts"
-                ]
-            }
-        },
-        "/posts/{id}": {
-            "get": {
-                "description": "Fetch a specific post by ID from JSONPlaceholder API and return formatted response",
+                    "map"
+                ],
+                "summary": "自転車ルート検索",
                 "parameters": [
                     {
-                        "description": "Post ID",
-                        "in": "path",
-                        "name": "id",
+                        "description": "出発地点の座標 (経度,緯度)",
+                        "name": "start",
+                        "in": "query",
                         "required": true,
-                        "type": "integer"
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "目的地の座標 (経度,緯度)",
+                        "name": "end",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "自転車駐輪場経由ルート",
+                        "name": "via_bike_parking",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    },
+                    {
+                        "description": "バス停回避",
+                        "name": "avoid_bus_stops",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    },
+                    {
+                        "description": "信号回避",
+                        "name": "avoid_traffic_lights",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
+                        "description": "GeoJson形式のルート情報",
                         "content": {
                             "application/json": {
-                                "examples": {
-                                    "success": {
-                                        "value": {
-                                            "body": "Sample post body content",
-                                            "formattedAt": "2024-01-01T12:00:00Z",
-                                            "id": 1,
-                                            "title": "Sample Post Title",
-                                            "userId": 1
-                                        }
-                                    }
-                                },
                                 "schema": {
-                                    "$ref": "#/components/schemas/PostResponse"
+                                    "$ref": "#/components/schemas/util.DirectionsResponse"
                                 }
                             }
-                        },
-                        "description": "OK"
+                        }
                     },
                     "400": {
+                        "description": "リクエストパラメータ不正",
                         "content": {
                             "application/json": {
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "error": "Internal server error",
-                                            "message": "Failed to fetch data"
-                                        }
-                                    }
-                                },
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
+                                    "$ref": "#/components/schemas/util.ORSErrorResponse"
                                 }
                             }
-                        },
-                        "description": "Bad Request"
+                        }
                     },
                     "404": {
+                        "description": "ルートが見つからない",
                         "content": {
                             "application/json": {
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "error": "Internal server error",
-                                            "message": "Failed to fetch data"
-                                        }
-                                    }
-                                },
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
+                                    "$ref": "#/components/schemas/util.ORSErrorResponse"
                                 }
                             }
-                        },
-                        "description": "Not Found"
+                        }
                     },
                     "500": {
+                        "description": "サーバー内部エラー",
                         "content": {
                             "application/json": {
-                                "examples": {
-                                    "error": {
-                                        "value": {
-                                            "error": "Internal server error",
-                                            "message": "Failed to fetch data"
-                                        }
-                                    }
-                                },
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
+                                    "$ref": "#/components/schemas/util.ORSErrorResponse"
                                 }
                             }
-                        },
-                        "description": "Internal Server Error"
+                        }
                     }
-                },
-                "summary": "Get a post by ID from JSONPlaceholder",
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Returns the health status of the API",
                 "tags": [
-                    "posts"
-                ]
+                    "health"
+                ],
+                "summary": "Health check endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/search": {
+            "get": {
+                "description": "Nominatimのレスポンスを横流し(https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5)",
+                "tags": [
+                    "map"
+                ],
+                "summary": "目的地候補検索",
+                "parameters": [
+                    {
+                        "description": "検索文字列",
+                        "name": "q",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/util.SearchResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/util.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/util.ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/util.ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/violation_rates": {
+            "get": {
+                "description": "/directions/bicycleでの経路検索結果に対する違反箇所の交差点を返す",
+                "tags": [
+                    "map"
+                ],
+                "summary": "違反箇所の交差点",
+                "parameters": [
+                    {
+                        "example": "session_id=53238c22-12ac-8ff8-fcdd-738d30a780df",
+                        "description": "/directions/bicycleのレスポンス内のsession_id",
+                        "name": "session_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of violation rates for given coordinates",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/util.ViolationRate"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warning_point": {
+            "get": {
+                "description": "取締強化交差点などの注意点をまとめて返す。",
+                "tags": [
+                    "map"
+                ],
+                "summary": "注意点取得",
+                "responses": {
+                    "200": {
+                        "description": "注意地点情報",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/util.WarningPoint"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
+    "servers": [
+        {
+            "url": "//localhost:8080/api/v1"
+        }
+    ],
     "components": {
         "schemas": {
-            "ErrorResponse": {
+            "util.DirectionsResponse": {
+                "type": "object",
+                "properties": {
+                    "bbox": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "comfort_score": {
+                        "description": "XXX 追加項目, 0-100のスコア",
+                        "type": "integer"
+                    },
+                    "features": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/util.ORSFeature"
+                        }
+                    },
+                    "metadata": {
+                        "$ref": "#/components/schemas/util.ORSMetadata"
+                    },
+                    "session_id": {
+                        "description": "XXX 追加項目, セッションID",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "https://openrouteservice.org/dev/#/api-docs/v2/directions/{profile}/geojson/get\nのレスポンスを構造体に",
+                        "type": "string"
+                    },
+                    "warning_points": {
+                        "description": "XXX 追加項目",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/util.WarningPoint"
+                        }
+                    }
+                }
+            },
+            "util.ErrorResponse": {
+                "type": "object",
                 "properties": {
                     "error": {
-                        "example": "Internal server error",
-                        "type": "string"
+                        "type": "string",
+                        "example": "Internal server error"
                     },
                     "message": {
-                        "example": "Failed to fetch data",
-                        "type": "string"
+                        "type": "string",
+                        "example": "Failed to fetch data"
                     }
-                },
-                "type": "object"
+                }
             },
-            "PostResponse": {
+            "util.ORSEngine": {
+                "type": "object",
                 "properties": {
-                    "body": {
-                        "example": "Sample post body content",
+                    "build_date": {
                         "type": "string"
                     },
-                    "formattedAt": {
-                        "example": "2024-01-01T12:00:00Z",
+                    "graph_date": {
                         "type": "string"
                     },
-                    "id": {
-                        "example": 1,
-                        "type": "integer"
-                    },
-                    "title": {
-                        "example": "Sample Post Title",
+                    "osm_date": {
                         "type": "string"
                     },
-                    "userId": {
-                        "example": 1,
+                    "version": {
+                        "type": "string"
+                    }
+                }
+            },
+            "util.ORSErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "integer"
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "util.ORSFeature": {
+                "type": "object",
+                "properties": {
+                    "bbox": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "geometry": {
+                        "$ref": "#/components/schemas/util.ORSGeometry"
+                    },
+                    "properties": {
+                        "$ref": "#/components/schemas/util.ORSFeatureProperties"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            },
+            "util.ORSFeatureProperties": {
+                "type": "object",
+                "properties": {
+                    "segments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/util.ORSSegment"
+                        }
+                    },
+                    "summary": {
+                        "$ref": "#/components/schemas/util.ORSSummary"
+                    },
+                    "way_points": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            },
+            "util.ORSGeometry": {
+                "type": "object",
+                "properties": {
+                    "coordinates": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "format": "float64"
+                            }
+                        }
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            },
+            "util.ORSMetadata": {
+                "type": "object",
+                "properties": {
+                    "attribution": {
+                        "type": "string"
+                    },
+                    "engine": {
+                        "$ref": "#/components/schemas/util.ORSEngine"
+                    },
+                    "query": {
+                        "$ref": "#/components/schemas/util.ORSQuery"
+                    },
+                    "service": {
+                        "type": "string"
+                    },
+                    "timestamp": {
                         "type": "integer"
                     }
-                },
-                "type": "object"
+                }
+            },
+            "util.ORSQuery": {
+                "type": "object",
+                "properties": {
+                    "coordinates": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "format": "float64"
+                            }
+                        }
+                    },
+                    "format": {
+                        "type": "string"
+                    },
+                    "profile": {
+                        "type": "string"
+                    },
+                    "profileName": {
+                        "type": "string"
+                    }
+                }
+            },
+            "util.ORSSegment": {
+                "type": "object",
+                "properties": {
+                    "distance": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    },
+                    "steps": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/util.ORSStep"
+                        }
+                    }
+                }
+            },
+            "util.ORSStep": {
+                "type": "object",
+                "properties": {
+                    "distance": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    },
+                    "instruction": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "integer"
+                    },
+                    "way_points": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            },
+            "util.ORSSummary": {
+                "type": "object",
+                "properties": {
+                    "distance": {
+                        "type": "number"
+                    },
+                    "duration": {
+                        "type": "number"
+                    }
+                }
+            },
+            "util.SearchResponse": {
+                "type": "object",
+                "properties": {
+                    "addresstype": {
+                        "description": "アドレスの種類（例: city, house, railway）",
+                        "type": "string"
+                    },
+                    "boundingbox": {
+                        "description": "範囲 [南緯, 北緯, 西経, 東経]",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "class": {
+                        "description": "分類（例: railway, building, amenity など）",
+                        "type": "string"
+                    },
+                    "display_name": {
+                        "description": "住所や施設名などの連結",
+                        "type": "string"
+                    },
+                    "importance": {
+                        "description": "検索結果の重要度スコア",
+                        "type": "number"
+                    },
+                    "lat": {
+                        "description": "緯度",
+                        "type": "string"
+                    },
+                    "licence": {
+                        "description": "データのライセンス情報",
+                        "type": "string"
+                    },
+                    "lon": {
+                        "description": "経度",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "OSM に登録されている名前",
+                        "type": "string"
+                    },
+                    "osm_id": {
+                        "description": "OSM 内の要素ID",
+                        "type": "integer"
+                    },
+                    "osm_type": {
+                        "description": "OSM 要素の種類 (node, way, relation)",
+                        "type": "string"
+                    },
+                    "place_id": {
+                        "description": "https://nominatim.openstreetmap.org/search?q={Client input}&format=json&limit=5\nのレスポンスを構造体に",
+                        "type": "integer"
+                    },
+                    "place_rank": {
+                        "description": "検索結果の粒度を示すランク",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "分類のサブタイプ（例: stop, station, bus_station など）",
+                        "type": "string"
+                    }
+                }
+            },
+            "util.ViolationRate": {
+                "type": "object",
+                "properties": {
+                    "coordinate": {
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "violation_count": {
+                        "description": "違反件数",
+                        "type": "integer"
+                    },
+                    "violation_rate": {
+                        "description": "違反率スコア",
+                        "type": "number"
+                    }
+                }
+            },
+            "util.WarningPoint": {
+                "type": "object",
+                "properties": {
+                    "coordinate": {
+                        "description": "座標",
+                        "type": "array",
+                        "items": {
+                            "type": "number"
+                        }
+                    },
+                    "message": {
+                        "description": "警告のメッセージ(どんな事故が多かったか)",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "名称, 地元での言われ名など(地獄谷etc)",
+                        "type": "string"
+                    },
+                    "type": {
+                        "description": "交差点なのか直線道路なのか(このフィールドいらない)",
+                        "type": "string"
+                    }
+                }
             }
         }
     }

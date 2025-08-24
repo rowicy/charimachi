@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Script to generate OpenAPI 3.0.3 specification from Go Gin swagger annotations
+# Script to generate OpenAPI 3.0.0 specification from Go Gin swagger annotations
 # This script follows the workflow requested:
 # 1. Run swag init to generate Swagger 2.0 in api/docs/
-# 2. Convert Swagger 2.0 to OpenAPI 3.0.3 
+# 2. Convert Swagger 2.0 to OpenAPI 3.0.0 
 # 3. Place result in openapi-specifications/api.swagger.json
 # 4. Verify npm commands work
 
 set -e
 
-echo "🚀 Starting OpenAPI 3.0.3 generation workflow..."
+echo "🚀 Starting OpenAPI 3.0.0 generation workflow..."
 
 # Check if we're in the right directory
 if [ ! -f "api/main.go" ]; then
@@ -44,16 +44,19 @@ if [ ! -f "api/docs/swagger.json" ]; then
 fi
 echo "✅ Swagger 2.0 documentation generated at api/docs/swagger.json"
 
-# Step 3: Convert Swagger 2.0 to OpenAPI 3.0.3
-echo "🔄 Converting Swagger 2.0 to OpenAPI 3.0.3..."
-go run convert-swagger.go
+# Step 3: Convert Swagger 2.0 to OpenAPI 3.0.0
+echo "🔄 Converting Swagger 2.0 to OpenAPI 3.0.0..."
+cd mobile-app
+npm install
+npm run swagger2openapi
+cd ..
 
-# Verify OpenAPI 3.0.3 was generated
+# Verify OpenAPI 3.0.0 was generated
 if [ ! -f "openapi-specifications/api.swagger.json" ]; then
     echo "❌ Error: openapi-specifications/api.swagger.json was not generated"
     exit 1
 fi
-echo "✅ OpenAPI 3.0.3 specification generated at openapi-specifications/api.swagger.json"
+echo "✅ OpenAPI 3.0.0 specification generated at openapi-specifications/api.swagger.json"
 
 # Step 4: Test npm commands
 echo "🧪 Testing npm commands..."
@@ -79,19 +82,24 @@ if [ ! -f "mobile-app/schema/api.d.ts" ]; then
 fi
 echo "✅ TypeScript definitions generated at mobile-app/schema/api.d.ts"
 
-# Test mock command (start and immediately stop)
+# Test mock command
 echo "Testing npm run mock..."
 cd mobile-app
-timeout 5s npm run mock || true
+( npm run mock & sleep 5; ) || true
 cd ..
 echo "✅ Mock server test passed"
+
+# Stop the mock server
+echo "Stopping mock server..."
+kill -9 $(lsof -t -i :8080) 2>/dev/null || true
+echo "✅ Mock server stopped"
 
 echo ""
 echo "🎉 All steps completed successfully!"
 echo ""
 echo "Generated files:"
 echo "  - api/docs/swagger.json (Swagger 2.0 from swag init)"
-echo "  - openapi-specifications/api.swagger.json (OpenAPI 3.0.3 converted)"
+echo "  - openapi-specifications/api.swagger.json (OpenAPI 3.0.0 converted)"
 echo "  - mobile-app/schema/api.d.ts (TypeScript definitions)"
 echo ""
 echo "Available commands:"

@@ -1,5 +1,5 @@
 {
-  "name": "mobile-app",
+  "name": "charimachi",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "engines": {
@@ -15,6 +15,7 @@
     "mock": "prism mock ../openapi-specifications/api.swagger.json --port 8080",
     "gen-schema:example": "openapi-typescript ../openapi-specifications/example.swagger.json -o ./schema/example.d.ts",
     "gen-schema": "openapi-typescript ../openapi-specifications/api.swagger.json -o ./schema/api.d.ts",
+    "swagger2openapi": "swagger2openapi ../api/docs/swagger.json -o ../openapi-specifications/api.swagger.json",
     "lint": "expo lint",
     "lint:fix": "expo lint --fix",
     "format": "prettier --write .",
@@ -25,12 +26,19 @@
   "dependencies": {
     "@expo/html-elements": "^0.4.2",
     "@expo/vector-icons": "^14.1.0",
+    "@gluestack-ui/actionsheet": "^0.2.53",
     "@gluestack-ui/button": "^1.0.14",
+    "@gluestack-ui/checkbox": "^0.1.39",
+    "@gluestack-ui/fab": "^0.1.28",
+    "@gluestack-ui/form-control": "^0.1.19",
     "@gluestack-ui/icon": "^0.1.27",
+    "@gluestack-ui/image": "^0.1.17",
     "@gluestack-ui/input": "^0.1.38",
+    "@gluestack-ui/link": "^0.1.29",
     "@gluestack-ui/nativewind-utils": "^1.0.26",
     "@gluestack-ui/overlay": "^0.1.22",
     "@gluestack-ui/toast": "^1.0.9",
+    "@legendapp/motion": "^2.4.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
@@ -81,6 +89,7 @@
     "jscodeshift": "^0.15.2",
     "openapi-typescript": "^7.8.0",
     "prettier": "^3.6.2",
+    "swagger2openapi": "^7.0.8",
     "typescript": "~5.8.3"
   },
   "private": true
