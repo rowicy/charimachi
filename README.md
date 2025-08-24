@@ -9,7 +9,7 @@
 
 ## デモ
 
-<img src="./screenshot/demo.gif" alt="注位置点表示" width="デモ" />
+<img src="./screenshot/demo.gif" alt="デモ" width="200" />
 
 [動画](https://drive.google.com/file/d/1YiH47TsoH7ZssMZgoyyxL8HFdFj577jk/view?usp=sharing)
 
