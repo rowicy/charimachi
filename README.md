@@ -2,12 +2,16 @@
 
 ![CHARIMACHI](./screenshot/thumbnail.png)
 
-<video src="./screenshot/demo.mp4" controls="true" width="600" style="display:block;"></video>
-
 <p style="text-align: center;">
   <img src="./screenshot/marker.png" alt="注位置点表示" width="200" />
   <img src="./screenshot/score.png" alt="快適度" width="200" />
 </p>
+
+## デモ
+
+<img src="./screenshot/demo.gif" alt="デモ" width="200" />
+
+[動画](https://drive.google.com/file/d/1YiH47TsoH7ZssMZgoyyxL8HFdFj577jk/view?usp=sharing)
 
 ## 概要
 
