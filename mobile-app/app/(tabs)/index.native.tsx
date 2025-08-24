@@ -13,12 +13,11 @@ import { $api } from "@/api-client/api";
 import { Box } from "@/components/ui/box";
 import type { components } from "@/schema/api";
 import Search from "@/components/search";
-import { Text } from "@/components/ui/text";
-import { Link, LinkText } from "@/components/ui/link";
 import Score from "@/components/score";
 import Result from "@/components/result";
 import Mode from "@/components/mode";
 import Marker from "@/components/marker";
+import Credit from "@/components/credit";
 
 export default function MapsScreen() {
   const { data: currentLocation, isLoading } = useCurrentLocation();
@@ -373,11 +372,8 @@ export default function MapsScreen() {
               destination={!!destination}
             />
 
-            <Box className="flex flex-row items-center justify-center p-1 bg-white/80 text-center mt-1">
-              <Text className="text-sm text-gray-500">&copy;&nbsp;</Text>
-              <Link href="https://www.openstreetmap.org/copyright">
-                <LinkText size="sm">OpenStreetMap contributors</LinkText>
-              </Link>
+            <Box className="max-w-[250px]">
+              <Credit />
             </Box>
           </Box>
 

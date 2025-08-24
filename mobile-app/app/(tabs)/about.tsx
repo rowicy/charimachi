@@ -6,6 +6,8 @@ import { Image } from "@/components/ui/image";
 import { Center } from "@/components/ui/center";
 import DataList from "@/components/data-list";
 import { Link, LinkText } from "@/components/ui/link";
+import Credit from "@/components/credit";
+import { Box } from "@/components/ui/box";
 
 export default function AboutScreen() {
   return (
@@ -49,6 +51,10 @@ export default function AboutScreen() {
             />
           </Link>
         </Center>
+
+        <Box className="py-16">
+          <Credit />
+        </Box>
       </ScrollView>
     </SafeAreaView>
   );
