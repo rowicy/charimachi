@@ -1,5 +1,5 @@
 ls:
-  dir: kebab-case
+  .dir: kebab-case
   .js: kebab-case
   .ts: kebab-case
   .tsx: kebab-case
@@ -9,9 +9,11 @@ ls:
   .svg: kebab-case
 
 ignore:
+  - .expo
   - node_modules
   - .vscode
   - app/**/_layout.tsx
   - app/**/+not-found.tsx
   - assets/images/**/[!@]*@2x.*
   - assets/images/**/[!@]*@3x.*
+  - app/(tabs)

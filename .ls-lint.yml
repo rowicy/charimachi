@@ -1,5 +1,4 @@
 ls:
-  dir: kebab-case
   .md: SCREAMING_SNAKE_CASE
   .github:
     workflows:
