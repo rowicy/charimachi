@@ -8,6 +8,6 @@ ls:
 ignore:
   - .git
   - .vscode
-  - api
-  - mobile-app
+  - api/*
+  - mobile-app/*
   - "!*.md"
